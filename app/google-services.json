@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "545747647433",
+    "firebase_url": "https://broadclass-1bbee.firebaseio.com",
+    "project_id": "broadclass-1bbee",
+    "storage_bucket": "broadclass-1bbee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:545747647433:android:f23e17b284ebab67",
+        "android_client_info": {
+          "package_name": "com.group4.cmpe131.broadclass"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "545747647433-h180r9ajn544j5jmp5pi28pk1eb2iv0g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChAXZZ5gg0Mxpn968aVAxq4poVWBI8UPg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
