@@ -31,7 +31,8 @@
         <activity
             android:name=".activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".activity.UserProfileActivity"></activity>
+        <activity android:name=".activity.UserProfileActivity" />
+        <activity android:name=".conversationActivity"></activity>
     </application>
 
 </manifest>

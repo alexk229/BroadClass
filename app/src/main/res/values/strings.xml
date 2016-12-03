@@ -83,6 +83,11 @@
         <item>-1</item>
     </string-array>
 
+    <!-- Strings related to messaging -->
+    <string name="btn_members">Members</string>
+    <string name="edit_message">Type a message</string>
+    <string name="large_text">fdsa</string> <!-- TODO: This is a placeholder. -->
+
     <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
 
