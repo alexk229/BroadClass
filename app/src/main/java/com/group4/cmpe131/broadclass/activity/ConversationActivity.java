@@ -1,5 +1,6 @@
 package com.group4.cmpe131.broadclass.activity;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,12 +19,13 @@ public class ConversationActivity extends AppCompatActivity {
         Toolbar conversationToolbar = (Toolbar) findViewById(R.id.conversation_toolbar);
         setSupportActionBar(conversationToolbar);
 
-        //Enable the Up button.
+        //Set up the toolbar.
         ActionBar conversationAb = getSupportActionBar();
         conversationAb.setDisplayHomeAsUpEnabled(true);
+        conversationAb.setDisplayShowTitleEnabled(false);
 
-        //TODO: Replace this with the actual conversation title.
-        conversationToolbar.setTitle("Some Group");
+        String title = getIntent().getStringExtra(Intent.EXTRA_TITLE);
+        conversationToolbar.setTitle(title);
     }
 
     public void sendMessage(View view) {

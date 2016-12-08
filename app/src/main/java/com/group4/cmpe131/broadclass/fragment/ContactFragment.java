@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import com.group4.cmpe131.broadclass.R;
 
-public class ContactFragment extends Fragment{
+public class ContactFragment extends Fragment {
 
     public ContactFragment() {
         // Required empty public constructor

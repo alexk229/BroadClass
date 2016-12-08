@@ -32,7 +32,15 @@
             android:name=".activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity android:name=".activity.UserProfileActivity" />
-        <activity android:name=".activity.ConversationActivity"
+        <activity
+            android:name=".activity.ConversationActivity"
+            android:parentActivityName=".activity.MainActivity"
+            android:windowSoftInputMode="stateUnchanged">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity" />
+        </activity>
+        <activity android:name=".activity.ClassDetailActivity"
             android:parentActivityName=".activity.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
