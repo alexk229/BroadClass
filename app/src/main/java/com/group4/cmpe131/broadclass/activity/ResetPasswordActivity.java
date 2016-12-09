@@ -59,7 +59,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                         if(task.isSuccessful()) {
                             Toast.makeText(ResetPasswordActivity.this, "We have sent you an email to reset your password.", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(ResetPasswordActivity.this, "Failed to send email. You have not registered for an account or used a wrong email.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ResetPasswordActivity.this, "Failed to send email. The email is either invalid or not registered.", Toast.LENGTH_LONG).show();
                         }
                         progressBar.setVisibility(View.GONE);
                     }

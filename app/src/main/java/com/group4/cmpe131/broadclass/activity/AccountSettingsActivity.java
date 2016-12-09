@@ -137,7 +137,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
             public void onClick(View v)
             {
                 Boolean wantToCloseDialog = false;
-                //Do stuff, possibly set wantToCloseDialog to true then...
+                //Attempts to change user email
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                 if(user != null) {
@@ -170,7 +170,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
     private void showChangePasswordDialog() {
 
-        // get change_email_dialog.xml view
+        // get change_password_dialog.xml view
         LayoutInflater layoutInflater = LayoutInflater.from(AccountSettingsActivity.this);
         View promptView = layoutInflater.inflate(R.layout.change_password_dialog, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountSettingsActivity.this);
@@ -204,7 +204,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
             public void onClick(View v)
             {
                 Boolean wantToCloseDialog = false;
-                //Do stuff, possibly set wantToCloseDialog to true then...
+                //Attempts to change user password
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                 if(user != null) {
@@ -236,7 +236,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
     }
 
     private void showDeleteAccountDialog() {
-        // get change_email_dialog.xml view
+        // get delete_account_dialog.xml view
         LayoutInflater layoutInflater = LayoutInflater.from(AccountSettingsActivity.this);
         View promptView = layoutInflater.inflate(R.layout.delete_account_dialog, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountSettingsActivity.this);

@@ -112,14 +112,15 @@ public class RegisterActivity extends AppCompatActivity {
 
                 progressBar.setVisibility(View.VISIBLE);
 
+                //Attempts to create a new user
                 fbAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Toast.makeText(RegisterActivity.this, "Registration Successful: " + task.isSuccessful(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
 
                         if(!task.isSuccessful()) {
-                            Toast.makeText(RegisterActivity.this, "Unable to register" + task.getException(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Unable to register", Toast.LENGTH_SHORT).show();
                         } else {
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(firstName + " " + lastName)
