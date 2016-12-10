@@ -20,7 +20,7 @@
     <string name="btn_logout">LOGOUT</string>
     <string name="btn_link_to_register">Not a member? Register here</string>
     <string name="btn_link_to_login">Already a member? Login here</string>
-    <string name="btn_forgot_password">Forgot your password?</string>
+    <string name="btn_forgot_password">Forgot password?</string>
     <string name="btn_reset_password">Reset Password</string>
     <string name="btn_back"><![CDATA[<< Back]]></string>
     <string name="hint_new_email">New Email</string>
@@ -32,7 +32,7 @@
     <string name="btn_send">Send</string>
     <string name="btn_remove">Remove</string>
     <string name="btn_sign_out">Sign Out</string>
-    <string name="lbl_forgot_password">Forgot your password?</string>
+    <string name="lbl_forgot_password">Forgot password?</string>
     <string name="forgot_password_msg">Please enter your email to request a password reset.</string>
     <string name="confirm_delete_account">Are you sure you want to delete your account?</string>
     <string name="title_activity_main">MainActivity</string>

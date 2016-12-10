@@ -212,16 +212,8 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_user_profile) {
             startActivity(new Intent(MainActivity.this, UserProfileActivity.class));
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
         } else if (id == R.id.nav_account_settings) {
             startActivity(new Intent(MainActivity.this, AccountSettingsActivity.class));
         } else if (id == R.id.nav_logout) {

@@ -29,6 +29,17 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/profile_image"
+                android:layout_width="120dp"
+                android:layout_height="100dp"
+                android:layout_margin="16dp"
+                android:src="@drawable/com_facebook_profile_picture_blank_square"
+                android:layout_gravity="bottom|center_horizontal|right"
+                app:civ_border_width="2dp"
+                app:civ_border_color="#FF000000"/>
+
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 

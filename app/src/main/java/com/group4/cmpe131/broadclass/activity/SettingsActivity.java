@@ -131,7 +131,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         ViewGroup rootView = (ViewGroup)findViewById(R.id.action_bar_root); //id from appcompat
 
         if (rootView != null) {
-            View view = getLayoutInflater().inflate(R.layout.app_bar_layout, rootView, false);
+            View view = getLayoutInflater().inflate(R.layout.app_bar_settings_layout, rootView, false);
             rootView.addView(view, 0);
 
             Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
