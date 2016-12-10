@@ -15,4 +15,10 @@
     <dimen name="custom_tab_layout_height">72dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+
+    <!-- Conversation -->
+    <dimen name="bubble_small_margin">4dp</dimen>
+    <dimen name="bubble_large_margin">128dp</dimen>
+    <dimen name="bubble_padding">4dp</dimen>
+    <dimen name="bubble_field_margin">8dp</dimen>
 </resources>

@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
+import com.group4.cmpe131.broadclass.activity.AddClassActivity;
 import com.group4.cmpe131.broadclass.activity.ClassDetailActivity;
 
 import java.util.ArrayList;
@@ -39,7 +40,6 @@ public class ClassFragment extends Fragment {
     private ListView classListView;
 
     private FloatingActionButton addClassButton;
-    private EditText classTitle, classDescription;
 
     private DatabaseReference root;
 
@@ -80,7 +80,8 @@ public class ClassFragment extends Fragment {
         addClassButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requestClassDescription();
+                Intent i = new Intent(getActivity(), AddClassActivity.class);
+                startActivity(i);
             }
         });
 
@@ -107,78 +108,5 @@ public class ClassFragment extends Fragment {
         });
 
         return classView;
-    }
-
-    //Dialog to create classroom
-    private void requestClassDescription() {
-        LayoutInflater layoutInflater = LayoutInflater.from(this.getActivity());
-        View promptView = layoutInflater.inflate(R.layout.dialog_register_classroom, null);
-        classTitle = (EditText)promptView.findViewById(R.id.class_title);
-        classDescription = (EditText)promptView.findViewById(R.id.class_description);
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this.getActivity());
-        alertDialogBuilder.setTitle("Class Information");
-        alertDialogBuilder.setView(promptView);
-
-        alertDialogBuilder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                //Empty
-            }
-        });
-
-        //Cancel classroom creation
-        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-            }
-        });
-
-        final AlertDialog alert = alertDialogBuilder.create();
-        alert.show();
-
-        //Attempts to create classroom
-        alert.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Boolean wantToCloseDialog = false;
-                //Attempts to change user email
-                if (attemptClassCreation(classTitle)) {
-                    wantToCloseDialog = true;
-                }
-
-                if (wantToCloseDialog) {
-                    Map<String, Object> map = new HashMap<String, Object>();
-                    map.put(classTitle.getText().toString(), "");
-                    root.updateChildren(map);
-
-                    //else dialog stays open.
-                    alert.dismiss();
-                }
-            }
-        });
-    }
-
-    //Checks if field are filled
-    private boolean attemptClassCreation(EditText mClassTitle) {
-
-        String classTitle = mClassTitle.getText().toString();
-
-        mClassTitle.setError(null);
-
-        boolean cancel = false;
-        View focusView = null;
-
-        if(classTitle.isEmpty()) {
-            mClassTitle.setError(getString(R.string.error_field_required));
-            focusView = mClassTitle;
-            cancel = true;
-        }
-
-        if(cancel) {
-            focusView.requestFocus();
-        }
-
-        return !cancel;
     }
 }

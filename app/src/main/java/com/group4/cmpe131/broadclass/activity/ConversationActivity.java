@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,11 +29,15 @@ public class ConversationActivity extends AppCompatActivity {
 
     private ImageButton sendMsgButton;
     private EditText inputMsgText;
-    private TextView chatMsgText;
     private FirebaseUser user;
     private String username, chatroomTitle;
     private DatabaseReference root;
-    private String tempChatKey, chatMsg, chatUsername;
+    private String tempChatKey;
+
+    //Layout variables.
+    private LayoutInflater inflater;
+    private LinearLayout conversationLayout;
+    private TextView conversationFooter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +58,13 @@ public class ConversationActivity extends AppCompatActivity {
 
         sendMsgButton = (ImageButton) findViewById(R.id.send_msg_button);
         inputMsgText = (EditText) findViewById(R.id.input_msg_text);
-        chatMsgText = (TextView) findViewById(R.id.chat_msg_text);
+
+        //Save layout variables.
+        inflater = getLayoutInflater();
+        conversationLayout = (LinearLayout) findViewById(R.id.conversation_layout);
+        conversationFooter = (TextView) findViewById(R.id.conversation_footer);
+
+        conversationFooter.requestFocus();
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -97,6 +109,31 @@ public class ConversationActivity extends AppCompatActivity {
         });
     }
 
+    /* Add a left-aligned text bubble to the end of the chat. */
+    private void addLeftBubble(String name, String content, String time) {
+        View bubble = inflater.inflate(R.layout.conversation_left_bubble, conversationLayout, false);
+
+        fillBubbleFields(bubble, name, content, time);
+
+        conversationLayout.addView(bubble, conversationLayout.getChildCount() - 1);
+    }
+
+    /* Add a right-aligned text bubble to the end of the chat. */
+    private void addRightBubble(String name, String content, String time) {
+        View bubble = inflater.inflate(R.layout.conversation_right_bubble, conversationLayout, false);
+
+        fillBubbleFields(bubble, name, content, time);
+
+        conversationLayout.addView(bubble, conversationLayout.getChildCount() - 1);
+    }
+
+    /* Fill the text fields of a text bubble. Invoked by addLeftBubble() and addRightBubble(). */
+    private void fillBubbleFields(View bubble, String name, String content, String time) {
+        ((TextView) bubble.findViewById(R.id.bubble_name)).setText(name);
+        ((TextView) bubble.findViewById(R.id.bubble_content)).setText(content);
+        ((TextView) bubble.findViewById(R.id.bubble_time)).setText(time);
+    }
+
     private void sendMessage() {
         Map<String, Object> keyMap = new HashMap<String, Object>();
         tempChatKey = root.push().getKey();
@@ -116,13 +153,38 @@ public class ConversationActivity extends AppCompatActivity {
 
     //Creates message conversation
     private void appendChatConversation(DataSnapshot dataSnapshot) {
+        String name = "", content = "", time = "12:34, 9 Dec 2016"; //TODO: Actual time.
 
         Iterator i = dataSnapshot.getChildren().iterator();
 
         while(i.hasNext()) {
+            DataSnapshot snapshot = (DataSnapshot)i.next();
 
-            chatUsername = (String) ((DataSnapshot)i.next()).getValue();
-            chatMsgText.append(chatUsername + ": " + chatMsg + " \n" );
+            switch (snapshot.getKey()) {
+                case "Name":
+                    name = (String) snapshot.getValue();
+                    break;
+
+                case "Msg":
+                    content = (String) snapshot.getValue();
+                    break;
+
+                default:
+                    break;
+            }
+
+            if(name != "" && content != "") {
+                if(name.equals(username)) {
+                    addRightBubble(name, content, time);
+                }
+
+                else {
+                    addLeftBubble(name, content, time);
+                }
+
+                name = "";
+                content = "";
+            }
         }
     }
 }

@@ -17,4 +17,7 @@
     <color name="btn_login_bg">#eceef1</color>
     <color name="lbl_name">#333333</color>
     <color name="btn_logout_bg">#ff6861</color>
+
+    <!-- Chat -->
+    <color name="bubble_text">#ffffff</color>
 </resources>
