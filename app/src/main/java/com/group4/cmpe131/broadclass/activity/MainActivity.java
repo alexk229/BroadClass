@@ -199,6 +199,11 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
+        if(id == R.id.action_search){
+            Toast.makeText(getApplicationContext(), "Search action is selected!", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -209,7 +214,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-
+            startActivity(new Intent(MainActivity.this, UserProfileActivity.class));
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {

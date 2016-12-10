@@ -1,7 +1,6 @@
 package com.group4.cmpe131.broadclass.activity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,7 +31,7 @@ public class ConversationActivity extends AppCompatActivity {
     private FirebaseUser user;
     private String username, chatroomTitle;
     private DatabaseReference root;
-    private String tempChatKey, chatMsg, chatUsername, chatConversation;
+    private String tempChatKey, chatMsg, chatUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +47,7 @@ public class ConversationActivity extends AppCompatActivity {
         conversationAb.setDisplayShowTitleEnabled(false);
 
         chatroomTitle = getIntent().getStringExtra(Intent.EXTRA_TITLE);
+        username = getIntent().getStringExtra("username");
         conversationToolbar.setTitle(chatroomTitle);
 
         sendMsgButton = (ImageButton) findViewById(R.id.send_msg_button);
@@ -58,26 +57,6 @@ public class ConversationActivity extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
 
         //sets display name for chat conversation
-        if (user != null) {
-            // User is signed in
-            username = user.getDisplayName();
-            Uri profileUri = user.getPhotoUrl();
-
-            // If the above were null, iterate the provider data
-            // and set with the first non null data
-            for (UserInfo userInfo : user.getProviderData()) {
-                if (username == null && userInfo.getDisplayName() != null) {
-                    username = userInfo.getDisplayName();
-
-                }
-                if (profileUri == null && userInfo.getPhotoUrl() != null) {
-                    profileUri = userInfo.getPhotoUrl();
-
-                }
-            }
-        }
-
-            //Displays email and display name
 
         root = FirebaseDatabase.getInstance().getReference().child(chatroomTitle);
 
@@ -119,15 +98,14 @@ public class ConversationActivity extends AppCompatActivity {
     }
 
     private void sendMessage() {
-        //TODO: Message-sending routine.
         Map<String, Object> keyMap = new HashMap<String, Object>();
         tempChatKey = root.push().getKey();
         root.updateChildren(keyMap);
 
         DatabaseReference messageRoot = root.child(tempChatKey);
         Map<String, Object> userMsgMap = new HashMap<String, Object>();
-        userMsgMap.put("name", username);
-        userMsgMap.put("msg", inputMsgText.getText().toString());
+        userMsgMap.put("Name", username);
+        userMsgMap.put("Msg", inputMsgText.getText().toString());
 
         messageRoot.updateChildren(userMsgMap);
     }
@@ -136,15 +114,15 @@ public class ConversationActivity extends AppCompatActivity {
         //TODO: Show conversation members.
     }
 
+    //Creates message conversation
     private void appendChatConversation(DataSnapshot dataSnapshot) {
 
         Iterator i = dataSnapshot.getChildren().iterator();
 
         while(i.hasNext()) {
-            chatMsg = (String) ((DataSnapshot)i.next()).getValue();
-//            chatUsername = (String) ((DataSnapshot)i.next()).getValue();
 
-            chatMsgText.append(chatUsername+ ": " + chatMsg + "\n" );
+            chatUsername = (String) ((DataSnapshot)i.next()).getValue();
+            chatMsgText.append(chatUsername + ": " + chatMsg + " \n" );
         }
     }
 }

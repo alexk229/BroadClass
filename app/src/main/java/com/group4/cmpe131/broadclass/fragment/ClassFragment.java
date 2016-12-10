@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -69,6 +70,7 @@ public class ClassFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ClassDetailActivity.class);
                 intent.putExtra(Intent.EXTRA_TITLE, classNameAdapter.getItem(position));
+                intent.putExtra("username", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                 startActivity(intent);
             }
         });
@@ -149,13 +151,15 @@ public class ClassFragment extends Fragment {
                     Map<String, Object> map = new HashMap<String, Object>();
                     map.put(classTitle.getText().toString(), "");
                     root.updateChildren(map);
-                    alert.dismiss();
+
                     //else dialog stays open.
+                    alert.dismiss();
                 }
             }
         });
     }
 
+    //Checks if field are filled
     private boolean attemptClassCreation(EditText mClassTitle) {
 
         String classTitle = mClassTitle.getText().toString();

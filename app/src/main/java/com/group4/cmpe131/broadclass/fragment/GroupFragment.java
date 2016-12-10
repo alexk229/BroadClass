@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.activity.ConversationActivity;
 
@@ -49,6 +50,7 @@ public class GroupFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ConversationActivity.class);
                 intent.putExtra(Intent.EXTRA_TITLE, groupNameAdapter.getItem(position));
+                intent.putExtra("username", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                 startActivity(intent);
             }
         });

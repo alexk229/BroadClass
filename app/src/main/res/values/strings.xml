@@ -53,6 +53,9 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_settings">Settings</string>
 
+    <!-- String related to Search -->
+    <string name="action_search">Search</string>
+
     <!-- Strings related to fragments -->
     <string name="class_fragment_title">Classes</string>
     <string name="group_fragment_title">Groups</string>
