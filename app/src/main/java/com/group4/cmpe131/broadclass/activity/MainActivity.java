@@ -1,33 +1,39 @@
 package com.group4.cmpe131.broadclass.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.support.design.widget.NavigationView;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.group4.cmpe131.broadclass.R;
+import com.group4.cmpe131.broadclass.app.Config;
 import com.group4.cmpe131.broadclass.fragment.ClassFragment;
 import com.group4.cmpe131.broadclass.fragment.ContactFragment;
 import com.group4.cmpe131.broadclass.fragment.GroupFragment;
+import com.group4.cmpe131.broadclass.util.NotificationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +45,8 @@ public class MainActivity extends AppCompatActivity
     private ViewPager viewPager;
     private TextView mName, mEmail;
     private FirebaseAuth fbAuth;
+    private FirebaseUser user;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +63,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View header = navigationView.getHeaderView(0);
         navigationView.setNavigationItemSelectedListener(this);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -63,14 +72,65 @@ public class MainActivity extends AppCompatActivity
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        mName = (TextView)findViewById(R.id.nameView);
-        mEmail = (TextView)findViewById(R.id.emailView);
+        mName = (TextView)header.findViewById(R.id.nameView);
+        mEmail = (TextView)header.findViewById(R.id.emailView);
 
         fbAuth = FirebaseAuth.getInstance();
+        user = fbAuth.getCurrentUser();
 
+        if (user != null) {
+            // User is signed in
+            String displayName = user.getDisplayName();
+            Uri profileUri = user.getPhotoUrl();
+
+            // If the above were null, iterate the provider data
+            // and set with the first non null data
+            for (UserInfo userInfo : user.getProviderData()) {
+                if (displayName == null && userInfo.getDisplayName() != null) {
+                    displayName = userInfo.getDisplayName();
+
+                }
+                if (profileUri == null && userInfo.getPhotoUrl() != null) {
+                    profileUri = userInfo.getPhotoUrl();
+
+                }
+            }
+
+            //Displays email and display name
+            if (user.getEmail() != null) mEmail.setText(user.getEmail().toString());
+            if (displayName != null) mName.setText(displayName.toString());
+/*            if (profileUri != null) {
+                Glide.with(this)
+                        .load(profileUri)
+                        .fitCenter()
+                        .into(userProfilePicture);
+            }*/
+        }
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                // checking for type intent filter
+                if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
+                    // gcm successfully registered
+                    // now subscribe to `global` topic to receive app wide notifications
+                    FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
+
+                } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
+                    // new push notification is received
+
+                    String message = intent.getStringExtra("message");
+
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+
+                }
+            }
+        };
 
     }
 
+    //Sets up tabs
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new ClassFragment(), "Classes");
@@ -173,5 +233,28 @@ public class MainActivity extends AppCompatActivity
 
     public void logout() {
         fbAuth.signOut();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register GCM registration complete receiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Config.REGISTRATION_COMPLETE));
+
+        // register new push message receiver
+        // by doing this, the activity will be notified each time a new message arrives
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Config.PUSH_NOTIFICATION));
+
+        // clear the notification area when the app is opened
+        NotificationUtils.clearNotifications(getApplicationContext());
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
     }
 }

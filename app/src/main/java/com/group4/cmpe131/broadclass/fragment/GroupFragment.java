@@ -16,19 +16,14 @@ import com.group4.cmpe131.broadclass.activity.ConversationActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupFragment extends Fragment{
+public class GroupFragment extends Fragment {
 
     //TODO: Replace this with groups from the database.
-    List<String> groupNameArray = new ArrayList<String>();
-    ArrayAdapter<String> groupNameAdapter;
+    private List<String> groupNameList = new ArrayList<String>();
+    private ArrayAdapter<String> groupNameAdapter;
 
     public GroupFragment() {
-        groupNameArray.add("Group A");
-        groupNameArray.add("Group B");
-        groupNameArray.add("Group C");
-        groupNameArray.add("Group D");
-        groupNameArray.add("Group E");
-        groupNameArray.add("Group F");
+        groupNameList.add("Group A");
     }
 
     @Override
@@ -44,7 +39,7 @@ public class GroupFragment extends Fragment{
 
         groupNameAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_list_item_1,
-                groupNameArray);
+                groupNameList);
 
         ListView groupList = (ListView) groupView.findViewById(R.id.group_list);
         groupList.setAdapter(groupNameAdapter);

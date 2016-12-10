@@ -3,10 +3,9 @@ package com.group4.cmpe131.broadclass.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -101,10 +100,11 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
     private void showChangeEmailDialog() {
 
-        // get change_email_dialog.xml view
+        // get dialog_change_email.xml view
         LayoutInflater layoutInflater = LayoutInflater.from(AccountSettingsActivity.this);
-        View promptView = layoutInflater.inflate(R.layout.change_email_dialog, null);
+        View promptView = layoutInflater.inflate(R.layout.dialog_change_email, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountSettingsActivity.this);
+        alertDialogBuilder.setTitle("Change email");
         alertDialogBuilder.setView(promptView);
 
         final EditText mOldEmail = (EditText) promptView.findViewById(R.id.old_email);
@@ -170,10 +170,11 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
     private void showChangePasswordDialog() {
 
-        // get change_password_dialog.xml view
+        // get dialog_change_password.xml view
         LayoutInflater layoutInflater = LayoutInflater.from(AccountSettingsActivity.this);
-        View promptView = layoutInflater.inflate(R.layout.change_password_dialog, null);
+        View promptView = layoutInflater.inflate(R.layout.dialog_change_password, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountSettingsActivity.this);
+        alertDialogBuilder.setTitle("Change password");
         alertDialogBuilder.setView(promptView);
 
         final EditText mOldPassword = (EditText) promptView.findViewById(R.id.old_password);
@@ -236,10 +237,11 @@ public class AccountSettingsActivity extends AppCompatActivity {
     }
 
     private void showDeleteAccountDialog() {
-        // get delete_account_dialog.xml view
+        // get dialog_delete_account.xml view
         LayoutInflater layoutInflater = LayoutInflater.from(AccountSettingsActivity.this);
-        View promptView = layoutInflater.inflate(R.layout.delete_account_dialog, null);
+        View promptView = layoutInflater.inflate(R.layout.dialog_delete_account, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountSettingsActivity.this);
+        alertDialogBuilder.setTitle("Delete account");
         alertDialogBuilder.setView(promptView);
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

@@ -18,7 +18,7 @@
         android:layout_height="0dp"
         android:layout_weight="1">
         <TextView
-            android:id="@+id/cvtv"
+            android:id="@+id/chat_msg_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </ScrollView>
@@ -27,12 +27,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <EditText
-            android:id="@+id/edit_message"
+            android:id="@+id/input_msg_text"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/edit_message"/>
         <ImageButton
+            android:id="@+id/send_msg_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_send"

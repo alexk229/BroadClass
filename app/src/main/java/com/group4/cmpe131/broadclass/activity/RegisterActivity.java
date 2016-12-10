@@ -1,11 +1,10 @@
 package com.group4.cmpe131.broadclass.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,7 +15,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.group4.cmpe131.broadclass.R;
 
@@ -43,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
         inputLastName = (EditText) findViewById(R.id.last_name);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
+        //Button to register user
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,12 +115,12 @@ public class RegisterActivity extends AppCompatActivity {
                 fbAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Toast.makeText(RegisterActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
 
                         if(!task.isSuccessful()) {
-                            Toast.makeText(RegisterActivity.this, "Unable to register", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Unable to register: " + task.getException(), Toast.LENGTH_SHORT).show();
                         } else {
+                            Toast.makeText(RegisterActivity.this, "Registration Successful" , Toast.LENGTH_SHORT).show();
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(firstName + " " + lastName)
                                     .build();
@@ -132,6 +131,14 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
 
+            }
+        });
+
+        //Button to login screen
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
             }
         });
 

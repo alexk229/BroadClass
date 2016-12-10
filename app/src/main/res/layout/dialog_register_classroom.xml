@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/class_title_view"
+            android:text="Class title"/>
+
+        <EditText
+            android:id="@+id/class_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="@string/hint_class_title"
+            android:inputType="textPersonName"
+            android:maxLines="1"
+            android:singleLine="true" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/class_description_view"
+            android:text="Class description"/>
+
+        <EditText
+            android:id="@+id/class_description"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:hint="@string/hint_class_description"
+            android:gravity="start"
+            android:inputType="textMultiLine"
+            android:ems="10" />
+
+
+    </LinearLayout>
+
+</ScrollView>
