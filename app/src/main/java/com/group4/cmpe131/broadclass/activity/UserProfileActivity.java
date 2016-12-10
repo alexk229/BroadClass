@@ -1,8 +1,8 @@
 package com.group4.cmpe131.broadclass.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +26,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.group4.cmpe131.broadclass.R;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -53,11 +57,20 @@ public class UserProfileActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (user != null) {
             toolbar.setTitle(user.getDisplayName().toString());
-            Context context = this.getApplicationContext();
-            Glide.with(context)
-                    .load(user.getPhotoUrl())
-                    .error(R.drawable.ic_default_profile_pic)
-                    .into(mProfilePic);
+
+            if(user.getPhotoUrl() != null) {
+                try {
+                    Bitmap imageBitmap = decodeFromFirebaseBase64(user.getPhotoUrl().toString());
+                    mProfilePic.setImageBitmap(imageBitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Glide.with(this.getApplicationContext())
+                        .load(user.getPhotoUrl())
+                        .error(R.drawable.ic_default_profile_pic)
+                        .into(mProfilePic);
+            }
         }
 
         setSupportActionBar(toolbar);
@@ -101,24 +114,37 @@ public class UserProfileActivity extends AppCompatActivity {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             mProfilePic.setImageBitmap(imageBitmap);
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                    .setPhotoUri(data.getData())
-                    .build();
-
-            user.updateProfile(profileUpdates)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                Log.d("UserProfileActivity: ", "User profile updated.");
-                            } else {
-                                Log.d("UserProfileActivity: ", "User profile failed.");
-                            }
-                        }
-                    });
+            encodeBitmapAndSaveToFirebase(imageBitmap);
         }
+    }
+
+    public void encodeBitmapAndSaveToFirebase(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        String imageEncoded = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(Uri.parse(imageEncoded))
+                .build();
+
+        user.updateProfile(profileUpdates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("UserProfileActivity: ", "User profile updated.");
+                        } else {
+                            Log.d("UserProfileActivity: ", "User profile failed.");
+                        }
+                    }
+                });
+    }
+
+    public static Bitmap decodeFromFirebaseBase64(String image) throws IOException {
+        byte[] decodedByteArray = android.util.Base64.decode(image, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
     }
 
     /**
