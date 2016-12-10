@@ -8,10 +8,27 @@
     tools:context="com.group4.cmpe131.broadclass.activity.UserProfileActivity"
     tools:showIn="@layout/activity_user_profile">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:text="@string/large_text" />
+        android:id="@+id/user_bio_layout"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/user_bio"
+            android:layout_margin="16dp"
+            android:paddingTop="16dp"
+            android:text="This is my bio"
+            android:textAlignment="center"
+            android:layout_gravity="center"/>
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_margin="16dp"
+            android:layout_gravity="center|bottom|right"
+            android:background="@android:color/transparent"
+            android:text="UPDATE BIO"/>
+    </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>
