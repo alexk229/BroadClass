@@ -16,9 +16,12 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.group4.cmpe131.broadclass.R;
 
@@ -124,17 +127,32 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         setupActionBar();
     }
 
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
     private void setupActionBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
+        ViewGroup rootView = (ViewGroup)findViewById(R.id.action_bar_root); //id from appcompat
+
+        if (rootView != null) {
+            View view = getLayoutInflater().inflate(R.layout.app_bar_layout, rootView, false);
+            rootView.addView(view, 0);
+
+            Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+        }
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
             // Show the Up button in the action bar.
-            toolbar.setTitle(getString(R.string.pref_header_general));
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
