@@ -4,8 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -19,7 +17,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,7 +36,6 @@ import com.group4.cmpe131.broadclass.fragment.ContactFragment;
 import com.group4.cmpe131.broadclass.fragment.GroupFragment;
 import com.group4.cmpe131.broadclass.util.NotificationUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,20 +104,11 @@ public class MainActivity extends AppCompatActivity
             if (displayName != null) mName.setText(displayName.toString());
 
             //Displays profile pic
-            if(user.getPhotoUrl() != null) {
-                try {
-                    Bitmap imageBitmap = decodeFromFirebaseBase64(user.getPhotoUrl().toString());
-                    mProfilePic.setImageBitmap(imageBitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
                 //If fails attempt to obtain profile picture from firebase url else use default profile pic
                 Glide.with(this.getApplicationContext())
-                        .load(user.getPhotoUrl())
+                        .load(user.getPhotoUrl().toString())
                         .error(R.drawable.com_facebook_profile_picture_blank_portrait)
                         .into(mProfilePic);
-            }
         }
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
@@ -241,11 +228,6 @@ public class MainActivity extends AppCompatActivity
 
     public void logout() {
         fbAuth.signOut();
-    }
-
-    public static Bitmap decodeFromFirebaseBase64(String image) throws IOException {
-        byte[] decodedByteArray = android.util.Base64.decode(image, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
     }
 
     @Override

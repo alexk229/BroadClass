@@ -1,22 +1,24 @@
 package com.group4.cmpe131.broadclass.activity;
 
 import android.Manifest;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -33,8 +35,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.group4.cmpe131.broadclass.R;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -47,6 +51,8 @@ public class UserProfileActivity extends AppCompatActivity {
     private EditText editUserBio;
     private TextView userBio;
     private FloatingActionButton cameraButton;
+
+    private String mImageFileLocation;
     private static final int REQUEST_IMAGE_CAPTURE = 111;
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
@@ -70,16 +76,9 @@ public class UserProfileActivity extends AppCompatActivity {
 
             //Attempts to get user profile picture
             if(user.getPhotoUrl() != null) {
-                try {
-                    Bitmap imageBitmap = decodeFromFirebaseBase64(user.getPhotoUrl().toString());
-                    mProfilePic.setImageBitmap(imageBitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
                 //If fails attempt to obtain profile picture from firebase url else use default profile pic
                 Glide.with(this.getApplicationContext())
-                        .load(user.getPhotoUrl())
+                        .load(user.getPhotoUrl().toString())
                         .error(R.drawable.com_facebook_profile_picture_blank_portrait)
                         .into(mProfilePic);
             }
@@ -151,10 +150,15 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         }
 
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "Image File name");
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(this.getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", photoFile));
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
@@ -167,47 +171,97 @@ public class UserProfileActivity extends AppCompatActivity {
                         //For Image Gallery
                     }
                     return;*/
-
                 case REQUEST_IMAGE_CAPTURE://actionCode
                     if (resultCode == RESULT_OK) {
                         //For CAMERA
 
-                        Bundle extras = data.getExtras();
-                        Bitmap imageBitmap = (Bitmap) extras.get("data");
-                        mProfilePic.setImageBitmap(imageBitmap);
-                        encodeBitmapAndSaveToFirebase(imageBitmap);
+                        //Bundle extras = data.getExtras();
+                        //Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+                        //Bitmap imageBitmap = BitmapFactory.decodeFile(mImageFileLocation);
+                        rotateImage(setReducedImageSize());
+
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                .setPhotoUri(Uri.parse(mImageFileLocation))
+                                .build();
+
+                        user.updateProfile(profileUpdates)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d("UserProfileActivity: ", "User profile updated.");
+                                        } else {
+                                            Log.d("UserProfileActivity: ", "User profile failed.");
+                                        }
+                                    }
+                                });
                     }
             }
 
     }
 
-    public void encodeBitmapAndSaveToFirebase(Bitmap bitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        String imageEncoded = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+    private File createImageFile() throws IOException {
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "IMG_" + timeStamp + "_";
+        File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setPhotoUri(Uri.parse(imageEncoded))
-                .build();
+        File image = File.createTempFile(imageFileName, ".jpg", storageDirectory);
 
-        user.updateProfile(profileUpdates)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("UserProfileActivity: ", "User profile updated.");
-                        } else {
-                            Log.d("UserProfileActivity: ", "User profile failed.");
-                        }
-                    }
-                });
+        mImageFileLocation = image.getAbsolutePath();
+
+        return image;
     }
 
-    public static Bitmap decodeFromFirebaseBase64(String image) throws IOException {
-        byte[] decodedByteArray = android.util.Base64.decode(image, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
+    private Bitmap setReducedImageSize() {
+        int targetImageViewWidth = mProfilePic.getWidth();
+        int targetImageViewHeight = mProfilePic.getHeight();
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mImageFileLocation, bmOptions);
+
+        int cameraImageWidth = bmOptions.outWidth;
+        int cameraImageHeight = bmOptions.outHeight;
+
+        int scaleFactor = Math.min(cameraImageWidth/targetImageViewWidth, cameraImageHeight/targetImageViewHeight);
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inJustDecodeBounds = false;
+
+        return BitmapFactory.decodeFile(mImageFileLocation, bmOptions);
+    }
+
+    private void rotateImage(Bitmap bitmap) {
+        ExifInterface exifInterface = null;
+        try {
+            exifInterface = new ExifInterface(mImageFileLocation);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.setRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.setRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.setRotate(270);
+                break;
+            default:
+        }
+
+        Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        mProfilePic.setImageBitmap(rotatedBitmap);
+    }
+
+    public void encodeBitmapAndSaveToFirebase(Bitmap bitmap) {
+
     }
 
     //Dialog to create classroom
