@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,11 +56,25 @@ public class ClassFragment extends Fragment {
         classAdapter = new ClassListItemAdapter(getActivity(), mClassList);
 
         //Listen for new classes to be added.
-        mFbProfile.child("Classes").addValueEventListener(new ValueEventListener() {
+        mFbProfile.child("Classes").addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 addClassSnapshotToList(dataSnapshot);
             }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                String classKey = dataSnapshot.getKey();
+
+                classAdapter.remove(classKey);
+                classAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
 
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -104,62 +119,56 @@ public class ClassFragment extends Fragment {
     private void addClassSnapshotToList(DataSnapshot classIdSnapshot) {
         final BCClassInfo classInfo = new BCClassInfo();
 
-        Iterator i = classIdSnapshot.getChildren().iterator();
+        final String classId = classIdSnapshot.getKey();
 
-        while(i.hasNext()) {
-            DataSnapshot s = (DataSnapshot) i.next();
+        classInfo.setClassID(classId);
 
-            final String classId = s.getKey();
+        final DatabaseReference classReference = mFbRoot.child("Classes").child(classId);
 
-            classInfo.setClassID(classId);
-
-            final DatabaseReference classReference = mFbRoot.child("Classes").child(classId);
-
-            classReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        classReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot classSnapshot) {
                     Iterator i = classSnapshot.getChildren().iterator();
 
-                    while(i.hasNext()) {
-                        DataSnapshot s = (DataSnapshot) i.next();
+                while(i.hasNext()) {
+                    DataSnapshot s = (DataSnapshot) i.next();
 
-                        switch(s.getKey()) {
-                            case "Name":
-                                classInfo.setClassName((String) s.getValue());
-                                break;
+                    switch(s.getKey()) {
+                        case "Name":
+                            classInfo.setClassName((String) s.getValue());
+                            break;
 
-                            case "Professor":
-                                classInfo.setProfessorID((String) s.getValue());
-                                break;
+                        case "Professor":
+                            classInfo.setProfessorID((String) s.getValue());
+                            break;
+                    }
+                }
+
+                final DatabaseReference professorReference = mFbRoot.child("Profiles").child(classInfo.getProfessorID());
+
+                professorReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot professorSnapshot) {
+                        Iterator i = professorSnapshot.getChildren().iterator();
+
+                        while(i.hasNext()) {
+                            DataSnapshot s = (DataSnapshot) i.next();
+
+                            if(s.getKey().equals("Name")) {
+                                classInfo.setProfessorName((String) s.getValue());
+                                classAdapter.add(classInfo);
+                                classAdapter.notifyDataSetChanged();
+                            }
                         }
                     }
 
-                    final DatabaseReference professorReference = mFbRoot.child("Profiles").child(classInfo.getProfessorID());
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
+            }
 
-                    professorReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot professorSnapshot) {
-                            Iterator i = professorSnapshot.getChildren().iterator();
-
-                            while(i.hasNext()) {
-                                DataSnapshot s = (DataSnapshot) i.next();
-
-                                if(s.getKey().equals("Name")) {
-                                    classInfo.setProfessorName((String) s.getValue());
-                                    classAdapter.appendToList(classInfo);
-                                    classAdapter.notifyDataSetChanged();
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {}
-                    });
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            });
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
 }
