@@ -1,20 +1,17 @@
 package com.group4.cmpe131.broadclass.fragment;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,33 +20,50 @@ import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.activity.AddClassActivity;
 import com.group4.cmpe131.broadclass.activity.ClassDetailActivity;
+import com.group4.cmpe131.broadclass.adapter.ClassListItemAdapter;
+import com.group4.cmpe131.broadclass.util.BCClassInfo;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class ClassFragment extends Fragment {
-
-    //TODO: Replace this with classes from the database.
-    private List<String> classList = new ArrayList<String>();
-    private ArrayAdapter<String> classNameAdapter;
+    private List<BCClassInfo> mClassList = new ArrayList<BCClassInfo>();
+    private ClassListItemAdapter classAdapter;
     private ListView classListView;
 
     private FloatingActionButton addClassButton;
 
-    private DatabaseReference root;
+    private FirebaseAuth mFbAuth;
+
+    private DatabaseReference mFbRoot;
+    private DatabaseReference mFbProfile;
 
     public ClassFragment() {
-        root = FirebaseDatabase.getInstance().getReference().getRoot();
+        mFbAuth = FirebaseAuth.getInstance();
+
+        mFbRoot = FirebaseDatabase.getInstance().getReference().getRoot();
+
+        FirebaseUser user = mFbAuth.getCurrentUser();
+        mFbProfile = mFbRoot.child("Profiles").child(user.getUid());
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        classAdapter = new ClassListItemAdapter(getActivity(), mClassList);
+
+        //Listen for new classes to be added.
+        mFbProfile.child("Classes").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                addClassSnapshotToList(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
 
     @Override
@@ -58,20 +72,20 @@ public class ClassFragment extends Fragment {
         // Inflate the layout for this fragment
         View classView = inflater.inflate(R.layout.fragment_class, container, false);
 
-        classNameAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1,
-                classList);
+
 
         classListView = (ListView) classView.findViewById(R.id.class_list_view);
-        classListView.setAdapter(classNameAdapter);
+        classListView.setAdapter(classAdapter);
 
         classListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), ClassDetailActivity.class);
-                intent.putExtra(Intent.EXTRA_TITLE, classNameAdapter.getItem(position));
-                intent.putExtra("username", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-                startActivity(intent);
+                Intent i = new Intent(getActivity(), ClassDetailActivity.class);
+
+                //Pass the Class ID to the detail activity.
+                i.putExtra("ClassID", ((BCClassInfo) classAdapter.getItem(position)).getClassID());
+
+                startActivity(i);
             }
         });
 
@@ -85,28 +99,69 @@ public class ClassFragment extends Fragment {
             }
         });
 
-        root.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Set<String> set = new HashSet<String>();
-                Iterator i = dataSnapshot.getChildren().iterator();
+        return classView;
+    }
 
-                while(i.hasNext()) {
-                    set.add(((DataSnapshot)i.next()).getKey());
+    /* Add a data snapshot pointing to a class ID from Firebase to the class list. */
+    private void addClassSnapshotToList(DataSnapshot classIdSnapshot) {
+        final BCClassInfo classInfo = new BCClassInfo();
+
+        Iterator i = classIdSnapshot.getChildren().iterator();
+
+        while(i.hasNext()) {
+            DataSnapshot s = (DataSnapshot) i.next();
+
+            final String classId = s.getKey();
+
+            classInfo.setClassID(classId);
+
+            final DatabaseReference classReference = mFbRoot.child("Classes").child(classId);
+
+            classReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot classSnapshot) {
+                    Iterator i = classSnapshot.getChildren().iterator();
+
+                    while(i.hasNext()) {
+                        DataSnapshot s = (DataSnapshot) i.next();
+
+                        switch(s.getKey()) {
+                            case "Name":
+                                classInfo.setClassName((String) s.getValue());
+                                break;
+
+                            case "Professor":
+                                classInfo.setProfessorID((String) s.getValue());
+                                break;
+                        }
+                    }
+
+                    final DatabaseReference professorReference = mFbRoot.child("Profiles").child(classInfo.getProfessorID());
+
+                    professorReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot professorSnapshot) {
+                            Iterator i = professorSnapshot.getChildren().iterator();
+
+                            while(i.hasNext()) {
+                                DataSnapshot s = (DataSnapshot) i.next();
+
+                                if(s.getKey().equals("Name")) {
+                                    classInfo.setProfessorName((String) s.getValue());
+                                    classAdapter.appendToList(classInfo);
+                                    classAdapter.notifyDataSetChanged();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {}
+                    });
                 }
 
-                classList.clear();
-                classList.addAll(set);
-
-                classNameAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        return classView;
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });
+        }
     }
 }

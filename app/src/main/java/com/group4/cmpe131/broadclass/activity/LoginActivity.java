@@ -108,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                                     }
                                 } else {
+                                    //TODO: Add check for existing profile. Create if not there.
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     hideDialog();
                                     startActivity(intent);
