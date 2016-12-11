@@ -89,6 +89,20 @@ public class UserProfileActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        //Checks permission of device
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            }
+
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                cameraButton.setEnabled(false);
+                requestPermissions(new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
+            }
+        }
 
         //Sets camera floating action button
         cameraButton.setOnClickListener(new View.OnClickListener() {
@@ -126,7 +140,8 @@ public class UserProfileActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -134,22 +149,6 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     public void onLaunchCamera() throws IOException {
-
-        //Checks permission of device
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-            }
-
-            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                cameraButton.setEnabled(false);
-                requestPermissions(new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
-            }
-        }
-
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(this.getPackageManager()) != null) {
             File photoFile = null;
@@ -166,6 +165,7 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
             switch (requestCode) {
+                //TODO: upload Image from gallery
 /*                case PICK_IMAGE_REQUEST://actionCode
                     if (resultCode == RESULT_OK && data != null && data.getData() != null) {
                         //For Image Gallery
@@ -174,11 +174,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 case REQUEST_IMAGE_CAPTURE://actionCode
                     if (resultCode == RESULT_OK) {
                         //For CAMERA
-
-                        //Bundle extras = data.getExtras();
-                        //Bitmap imageBitmap = (Bitmap) extras.get("data");
-
-                        //Bitmap imageBitmap = BitmapFactory.decodeFile(mImageFileLocation);
                         rotateImage(setReducedImageSize());
 
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -258,10 +253,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
         Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
         mProfilePic.setImageBitmap(rotatedBitmap);
-    }
-
-    public void encodeBitmapAndSaveToFirebase(Bitmap bitmap) {
-
     }
 
     //Dialog to create classroom

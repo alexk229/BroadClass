@@ -18,7 +18,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -77,9 +76,9 @@ public class MainActivity extends AppCompatActivity
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        mName = (TextView)header.findViewById(R.id.nameView);
-        mEmail = (TextView)header.findViewById(R.id.emailView);
-        mProfilePic = (CircleImageView)header.findViewById(R.id.profile_main_image);
+        mName = (TextView) header.findViewById(R.id.nameView);
+        mEmail = (TextView) header.findViewById(R.id.emailView);
+        mProfilePic = (CircleImageView) header.findViewById(R.id.profile_main_image);
 
         fbAuth = FirebaseAuth.getInstance();
         user = fbAuth.getCurrentUser();
@@ -105,45 +104,40 @@ public class MainActivity extends AppCompatActivity
             if (displayName != null) mName.setText(displayName.toString());
 
             //Displays profile pic
-<<<<<<< HEAD
-                //If fails attempt to obtain profile picture from firebase url else use default profile pic
-            if(profilePic != null) {
-=======
             //If fails attempt to obtain profile picture from firebase url else use default profile pic
-            if(user.getPhotoUrl() != null) {
->>>>>>> 184fcfaf78e89ee79751bec3a2ef69606bfa23a8
-                Glide.with(this.getApplicationContext())
-                        .load(profilePic.toString())
-                        .error(R.drawable.com_facebook_profile_picture_blank_portrait)
-                        .into(mProfilePic);
-<<<<<<< HEAD
-            } else {
-
-=======
->>>>>>> 184fcfaf78e89ee79751bec3a2ef69606bfa23a8
-            }
-        }
-
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                // checking for type intent filter
-                if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
-                    // gcm successfully registered
-                    // now subscribe to `global` topic to receive app wide notifications
-                    FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
-
-                } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
-                    // new push notification is received
-
-                    String message = intent.getStringExtra("message");
-
-                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-
+            if (profilePic != null) {
+                //If fails attempt to obtain profile picture from firebase url else use default profile pic
+                if (user.getPhotoUrl() != null) {
+                    Glide.with(this.getApplicationContext())
+                            .load(profilePic.toString())
+                            .error(R.drawable.com_facebook_profile_picture_blank_portrait)
+                            .into(mProfilePic);
+                } else {
+                    mProfilePic.setImageResource(R.drawable.com_facebook_profile_picture_blank_portrait);
                 }
             }
-        };
+
+            mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+
+                    // checking for type intent filter
+                    if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
+                        // gcm successfully registered
+                        // now subscribe to `global` topic to receive app wide notifications
+                        FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
+
+                    } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
+                        // new push notification is received
+
+                        String message = intent.getStringExtra("message");
+
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+
+                    }
+                }
+            };
+        }
     }
 
     //Sets up tabs
