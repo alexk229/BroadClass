@@ -1,5 +1,6 @@
 package com.group4.cmpe131.broadclass.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,7 +9,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,8 +22,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private EditText inputEmail, inputPassword, inputConfirmPassword, inputFirstName, inputLastName;
     private Button btnRegister, btnLogin;
-    private ProgressBar progressBar;
     private FirebaseAuth fbAuth;
+    private ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,10 @@ public class RegisterActivity extends AppCompatActivity {
         inputConfirmPassword = (EditText) findViewById(R.id.confirm_password);
         inputFirstName = (EditText) findViewById(R.id.first_name);
         inputLastName = (EditText) findViewById(R.id.last_name);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        // Progress dialog
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(false);
 
         //Button to register user
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -60,6 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
                 inputPassword.setError(null);
                 inputConfirmPassword.setError(null);
 
+                //The following validates edit text fields
                 if(TextUtils.isEmpty(firstName)) {
                     inputFirstName.setError(getString(R.string.error_field_required));
                     focusView = inputFirstName;
@@ -109,17 +113,19 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                progressBar.setVisibility(View.VISIBLE);
+                pDialog.setMessage("Registering ...");
+                showDialog();
 
                 //Attempts to create a new user
                 fbAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressBar.setVisibility(View.GONE);
 
                         if(!task.isSuccessful()) {
                             Toast.makeText(RegisterActivity.this, "Unable to register: " + task.getException(), Toast.LENGTH_SHORT).show();
+                            hideDialog();
                         } else {
+                            hideDialog();
                             Toast.makeText(RegisterActivity.this, "Registration Successful" , Toast.LENGTH_SHORT).show();
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(firstName + " " + lastName)
@@ -144,10 +150,19 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    private void showDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hideDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
-        progressBar.setVisibility(View.GONE);
     }
 
 }

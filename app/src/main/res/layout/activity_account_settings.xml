@@ -63,12 +63,4 @@
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_margin="16dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:visibility="gone"
-        android:layout_gravity="center|bottom"/>
-
 </android.support.design.widget.CoordinatorLayout>

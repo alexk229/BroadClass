@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -38,12 +39,15 @@ import com.group4.cmpe131.broadclass.util.NotificationUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private TextView mName, mEmail;
+    private CircleImageView mProfilePic;
     private FirebaseAuth fbAuth;
     private FirebaseUser user;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
@@ -72,8 +76,9 @@ public class MainActivity extends AppCompatActivity
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        mName = (TextView)header.findViewById(R.id.nameView);
-        mEmail = (TextView)header.findViewById(R.id.emailView);
+        mName = (TextView) header.findViewById(R.id.nameView);
+        mEmail = (TextView) header.findViewById(R.id.emailView);
+        mProfilePic = (CircleImageView) header.findViewById(R.id.profile_main_image);
 
         fbAuth = FirebaseAuth.getInstance();
         user = fbAuth.getCurrentUser();
@@ -81,53 +86,58 @@ public class MainActivity extends AppCompatActivity
         if (user != null) {
             // User is signed in
             String displayName = user.getDisplayName();
-            Uri profileUri = user.getPhotoUrl();
+            Uri profilePic = user.getPhotoUrl();
 
             // If the above were null, iterate the provider data
             // and set with the first non null data
             for (UserInfo userInfo : user.getProviderData()) {
                 if (displayName == null && userInfo.getDisplayName() != null) {
                     displayName = userInfo.getDisplayName();
-
                 }
-                if (profileUri == null && userInfo.getPhotoUrl() != null) {
-                    profileUri = userInfo.getPhotoUrl();
-
+                if (profilePic == null && userInfo.getPhotoUrl() != null) {
+                    profilePic = userInfo.getPhotoUrl();
                 }
             }
 
             //Displays email and display name
             if (user.getEmail() != null) mEmail.setText(user.getEmail().toString());
             if (displayName != null) mName.setText(displayName.toString());
-/*            if (profileUri != null) {
-                Glide.with(this)
-                        .load(profileUri)
-                        .fitCenter()
-                        .into(userProfilePicture);
-            }*/
-        }
 
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                // checking for type intent filter
-                if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
-                    // gcm successfully registered
-                    // now subscribe to `global` topic to receive app wide notifications
-                    FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
-
-                } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
-                    // new push notification is received
-
-                    String message = intent.getStringExtra("message");
-
-                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-
+            //Displays profile pic
+            //If fails attempt to obtain profile picture from firebase url else use default profile pic
+            if (profilePic != null) {
+                //If fails attempt to obtain profile picture from firebase url else use default profile pic
+                if (user.getPhotoUrl() != null) {
+                    Glide.with(this.getApplicationContext())
+                            .load(profilePic.toString())
+                            .error(R.drawable.com_facebook_profile_picture_blank_portrait)
+                            .into(mProfilePic);
+                } else {
+                    mProfilePic.setImageResource(R.drawable.com_facebook_profile_picture_blank_portrait);
                 }
             }
-        };
 
+            mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+
+                    // checking for type intent filter
+                    if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
+                        // gcm successfully registered
+                        // now subscribe to `global` topic to receive app wide notifications
+                        FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
+
+                    } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
+                        // new push notification is received
+
+                        String message = intent.getStringExtra("message");
+
+                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+
+                    }
+                }
+            };
+        }
     }
 
     //Sets up tabs
@@ -222,6 +232,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //Signs out user
     public void logout() {
         fbAuth.signOut();
     }

@@ -37,7 +37,7 @@ public class ConversationActivity extends AppCompatActivity {
     //Layout variables.
     private LayoutInflater inflater;
     private LinearLayout conversationLayout;
-    private TextView conversationFooter;
+    private TextView conversationFooter, chatMsgText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +59,8 @@ public class ConversationActivity extends AppCompatActivity {
         sendMsgButton = (ImageButton) findViewById(R.id.send_msg_button);
         inputMsgText = (EditText) findViewById(R.id.input_msg_text);
 
+        //TODO: change textview ui
+ //       chatMsgText = (TextView) findViewById(R.id.chat_msg_text);
         //Save layout variables.
         inflater = getLayoutInflater();
         conversationLayout = (LinearLayout) findViewById(R.id.conversation_layout);
@@ -109,6 +111,7 @@ public class ConversationActivity extends AppCompatActivity {
         });
     }
 
+    //Sends message
     /* Add a left-aligned text bubble to the end of the chat. */
     private void addLeftBubble(String name, String content, String time) {
         View bubble = inflater.inflate(R.layout.conversation_left_bubble, conversationLayout, false);

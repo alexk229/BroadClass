@@ -23,11 +23,11 @@
             android:textAlignment="center"
             android:layout_gravity="center"/>
         <Button
-            android:layout_width="100dp"
+            android:id="@+id/update_bio_button"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_margin="16dp"
             android:layout_gravity="center|bottom|right"
-            android:background="@android:color/transparent"
             android:text="UPDATE BIO"/>
     </LinearLayout>
 

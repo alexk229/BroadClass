@@ -1,6 +1,7 @@
 package com.group4.cmpe131.broadclass.activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,9 +25,9 @@ import com.group4.cmpe131.broadclass.R;
 public class AccountSettingsActivity extends AppCompatActivity {
 
     private Button btnChangeEmail, btnChangePassword, btnDeleteAccount;
-    private ProgressBar progressBar;
     private FirebaseAuth fbAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
+    private ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +58,9 @@ public class AccountSettingsActivity extends AppCompatActivity {
         btnChangePassword = (Button)findViewById(R.id.change_password_button);
         btnDeleteAccount = (Button)findViewById(R.id.delete_account_button);
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-
-        if(progressBar != null) {
-            progressBar.setVisibility(View.GONE);
-        }
+        // Progress dialog
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(false);
 
         btnChangeEmail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,7 +141,8 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 if(user != null) {
                     if(attemptEmailChange(mOldEmail, mNewEmail, mNewConfirmEmail)) {
                         wantToCloseDialog = true;
-                        progressBar.setVisibility(View.VISIBLE);
+                        pDialog.setMessage("Updating ...");
+                        showDialog();
                     }
                 }
                 //Change user email
@@ -152,12 +151,12 @@ public class AccountSettingsActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
+                                hideDialog();
                                 Toast.makeText(AccountSettingsActivity.this, "Email successfully updated. Please sign in with your new email.", Toast.LENGTH_LONG).show();
                                 logout();
-                                progressBar.setVisibility(View.GONE);
                             } else {
+                                hideDialog();
                                 Toast.makeText(AccountSettingsActivity.this, "Failed to update email.", Toast.LENGTH_LONG).show();
-                                progressBar.setVisibility(View.GONE);
                             }
                         }
                     });
@@ -211,7 +210,8 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 if(user != null) {
                     if(attemptPasswordChange(mOldPassword, mNewPassword, mNewConfirmPassword)) {
                         wantToCloseDialog = true;
-                        progressBar.setVisibility(View.VISIBLE);
+                        pDialog.setMessage("Updating ...");
+                        showDialog();
                     }
                 }
                 //Change user password
@@ -220,12 +220,12 @@ public class AccountSettingsActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
+                                hideDialog();
                                 Toast.makeText(AccountSettingsActivity.this, "Password successfully updated. Please sign in with your new password.", Toast.LENGTH_LONG).show();
                                 logout();
-                                progressBar.setVisibility(View.GONE);
                             } else {
+                                hideDialog();
                                 Toast.makeText(AccountSettingsActivity.this, "Failed to update password.", Toast.LENGTH_LONG).show();
-                                progressBar.setVisibility(View.GONE);
                             }
                         }
                     });
@@ -252,19 +252,20 @@ public class AccountSettingsActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         //delete user account
                         if (user != null) {
-                            progressBar.setVisibility(View.VISIBLE);
+                            pDialog.setMessage("Deleting ...");
+                            showDialog();
                             user.delete()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
+                                                hideDialog();
                                                 Toast.makeText(AccountSettingsActivity.this, "Your account has been successfully deleted.", Toast.LENGTH_SHORT).show();
                                                 startActivity(new Intent(AccountSettingsActivity.this, LoginActivity.class));
                                                 finish();
-                                                progressBar.setVisibility(View.GONE);
                                             } else {
+                                                hideDialog();
                                                 Toast.makeText(AccountSettingsActivity.this, "Failed to delete your account.", Toast.LENGTH_SHORT).show();
-                                                progressBar.setVisibility(View.GONE);
                                             }
                                         }
                                     });
@@ -290,7 +291,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
 
     //checks if password is valid
     private boolean isPasswordValid(String password) {
-        return password.length() > 6;
+        return password.length() >= 6;
     }
 
     private boolean attemptEmailChange(EditText mOldEmail, EditText mNewEmail, EditText mNewConfirmEmail) {
@@ -366,6 +367,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
         return !cancel;
     }
 
+    //Checks if password is valid
     private boolean attemptPasswordChange(EditText mOldPassword, EditText mNewPassword, EditText mNewConfirmPassword) {
 
         String oldPassword = mOldPassword.getText().toString();
@@ -438,7 +440,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        progressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -453,5 +454,15 @@ public class AccountSettingsActivity extends AppCompatActivity {
         if (authStateListener != null) {
             fbAuth.removeAuthStateListener(authStateListener);
         }
+    }
+
+    private void showDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hideDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
     }
 }
