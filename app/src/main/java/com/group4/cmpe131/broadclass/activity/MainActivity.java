@@ -232,6 +232,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //Signs out user
     public void logout() {
         fbAuth.signOut();
     }
