@@ -22,7 +22,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.group4.cmpe131.broadclass.R;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -100,7 +99,7 @@ public class ConversationActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                appendChatConversation(dataSnapshot);
+                //appendChatConversation(dataSnapshot);
             }
 
             @Override
@@ -184,10 +183,11 @@ public class ConversationActivity extends AppCompatActivity {
 
                 case "Timestamp":
                     time = snapshot.getValue().toString();
-                    time = getTimeStamp(time.toString());
-                    break;
-                default:
-                    break;
+                    Long temp = Long.parseLong(time);
+                    SimpleDateFormat format = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+                    time = format.format(new Date(temp));
+                    System.out.println(time);
+
             }
 
             if(name != "" && content != "" && time != "") {
@@ -204,24 +204,5 @@ public class ConversationActivity extends AppCompatActivity {
                 time = "";
             }
         }
-    }
-
-    public static String getTimeStamp(String dateStr) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String timestamp = "";
-
-        currentTime = currentTime.length() < 2 ? "0" + currentTime : currentTime;
-
-        try {
-            Date date = format.parse(dateStr);
-            SimpleDateFormat todayFormat = new SimpleDateFormat("dd");
-            String dateToday = todayFormat.format(date);
-            format = dateToday.equals(currentTime) ? new SimpleDateFormat("hh:mm a") : new SimpleDateFormat("dd LLL, hh:mm a");
-            String date1 = format.format(date);
-            timestamp = date1.toString();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return timestamp;
     }
 }
