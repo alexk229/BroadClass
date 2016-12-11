@@ -4,7 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -18,12 +19,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
@@ -35,8 +39,11 @@ import com.group4.cmpe131.broadclass.fragment.ContactFragment;
 import com.group4.cmpe131.broadclass.fragment.GroupFragment;
 import com.group4.cmpe131.broadclass.util.NotificationUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -44,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private TextView mName, mEmail;
+    private CircleImageView mProfilePic;
     private FirebaseAuth fbAuth;
     private FirebaseUser user;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
@@ -75,36 +83,45 @@ public class MainActivity extends AppCompatActivity
         mName = (TextView)header.findViewById(R.id.nameView);
         mEmail = (TextView)header.findViewById(R.id.emailView);
 
+        final LayoutInflater factory = getLayoutInflater();
+        final View navView = factory.inflate(R.layout.nav_header_main, null);
+
+        mProfilePic = (CircleImageView)navView.findViewById(R.id.profile_main_image);
+
         fbAuth = FirebaseAuth.getInstance();
         user = fbAuth.getCurrentUser();
 
         if (user != null) {
             // User is signed in
             String displayName = user.getDisplayName();
-            Uri profileUri = user.getPhotoUrl();
 
             // If the above were null, iterate the provider data
             // and set with the first non null data
             for (UserInfo userInfo : user.getProviderData()) {
                 if (displayName == null && userInfo.getDisplayName() != null) {
                     displayName = userInfo.getDisplayName();
-
-                }
-                if (profileUri == null && userInfo.getPhotoUrl() != null) {
-                    profileUri = userInfo.getPhotoUrl();
-
                 }
             }
 
             //Displays email and display name
             if (user.getEmail() != null) mEmail.setText(user.getEmail().toString());
             if (displayName != null) mName.setText(displayName.toString());
-/*            if (profileUri != null) {
-                Glide.with(this)
-                        .load(profileUri)
-                        .fitCenter()
-                        .into(userProfilePicture);
-            }*/
+
+            //Displays profile pic
+            if(user.getPhotoUrl() != null) {
+                try {
+                    Bitmap imageBitmap = decodeFromFirebaseBase64(user.getPhotoUrl().toString());
+                    mProfilePic.setImageBitmap(imageBitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                //If fails attempt to obtain profile picture from firebase url else use default profile pic
+                Glide.with(this.getApplicationContext())
+                        .load(user.getPhotoUrl())
+                        .error(R.drawable.com_facebook_profile_picture_blank_portrait)
+                        .into(mProfilePic);
+            }
         }
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
@@ -229,6 +246,11 @@ public class MainActivity extends AppCompatActivity
 
     public void logout() {
         fbAuth.signOut();
+    }
+
+    public static Bitmap decodeFromFirebaseBase64(String image) throws IOException {
+        byte[] decodedByteArray = android.util.Base64.decode(image, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
     }
 
     @Override

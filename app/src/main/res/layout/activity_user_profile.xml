@@ -33,7 +33,7 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/profile_image"
                 android:layout_width="120dp"
-                android:layout_height="100dp"
+                android:layout_height="120dp"
                 android:layout_margin="16dp"
                 android:src="@drawable/com_facebook_profile_picture_blank_square"
                 android:layout_gravity="bottom|center_horizontal|right"
@@ -46,7 +46,7 @@
     <include layout="@layout/content_user_profile" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/camera_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"

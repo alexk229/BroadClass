@@ -41,6 +41,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
             }
         });
 
+        //Button to reset password
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,6 +54,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 }
 
                 progressBar.setVisibility(View.VISIBLE);
+
+                //Attempts to send email to user
                 fbAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

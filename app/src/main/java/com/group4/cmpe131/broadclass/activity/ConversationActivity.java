@@ -52,6 +52,8 @@ public class ConversationActivity extends AppCompatActivity {
 
         sendMsgButton = (ImageButton) findViewById(R.id.send_msg_button);
         inputMsgText = (EditText) findViewById(R.id.input_msg_text);
+
+        //TODO: change textview ui
         chatMsgText = (TextView) findViewById(R.id.chat_msg_text);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -97,6 +99,7 @@ public class ConversationActivity extends AppCompatActivity {
         });
     }
 
+    //Sends message
     private void sendMessage() {
         Map<String, Object> keyMap = new HashMap<String, Object>();
         tempChatKey = root.push().getKey();

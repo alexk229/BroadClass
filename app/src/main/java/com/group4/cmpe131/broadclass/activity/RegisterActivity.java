@@ -60,6 +60,7 @@ public class RegisterActivity extends AppCompatActivity {
                 inputPassword.setError(null);
                 inputConfirmPassword.setError(null);
 
+                //The following validates edit text fields
                 if(TextUtils.isEmpty(firstName)) {
                     inputFirstName.setError(getString(R.string.error_field_required));
                     focusView = inputFirstName;
@@ -109,6 +110,7 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
+                //Shows progress bar
                 progressBar.setVisibility(View.VISIBLE);
 
                 //Attempts to create a new user

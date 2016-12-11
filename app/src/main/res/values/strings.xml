@@ -140,9 +140,11 @@
     <!-- Strings related to user profile -->
     <string name="title_activity_user_profile">UserProfileActivity</string>
     <string name="user_bio"><b>User bio: </b></string>
+    <string name="hint_user_bio_description">Enter bio information</string>
 
     <!-- Strings related to class description -->
     <string name="class_title">Class title</string>
     <string name="hint_class_description">Enter class description</string>
     <string name="hint_class_title">Enter class title</string>
+
 </resources>

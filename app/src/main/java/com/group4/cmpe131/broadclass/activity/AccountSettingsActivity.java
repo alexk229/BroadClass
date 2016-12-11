@@ -366,6 +366,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
         return !cancel;
     }
 
+    //Checks if password is valid
     private boolean attemptPasswordChange(EditText mOldPassword, EditText mNewPassword, EditText mNewConfirmPassword) {
 
         String oldPassword = mOldPassword.getText().toString();
