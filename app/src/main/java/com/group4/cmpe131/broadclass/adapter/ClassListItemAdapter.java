@@ -43,7 +43,15 @@ public class ClassListItemAdapter extends BaseAdapter {
         return mList.get(position);
     }
 
-    public void appendToList(BCClassInfo classInfo) {
+    public void add(BCClassInfo classInfo) {
         mList.add(classInfo);
+    }
+
+    public void remove(String classKey) {
+        for(int i = 0; i < getCount(); i++) {
+            if(mList.get(i).getClassID().equals(classKey)) {
+                mList.remove(i);
+            }
+        }
     }
 }
