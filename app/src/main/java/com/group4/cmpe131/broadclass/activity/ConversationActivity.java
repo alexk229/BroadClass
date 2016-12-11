@@ -60,7 +60,7 @@ public class ConversationActivity extends AppCompatActivity {
         inputMsgText = (EditText) findViewById(R.id.input_msg_text);
 
         //TODO: change textview ui
-        chatMsgText = (TextView) findViewById(R.id.chat_msg_text);
+ //       chatMsgText = (TextView) findViewById(R.id.chat_msg_text);
         //Save layout variables.
         inflater = getLayoutInflater();
         conversationLayout = (LinearLayout) findViewById(R.id.conversation_layout);
