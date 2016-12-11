@@ -16,12 +16,20 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText inputEmail, inputPassword;
+
     private FirebaseAuth fbAuth;
+    //private DatabaseReference fbRoot;
+
     private Button btnLogin, btnResetPW, btnRegister;
     private ProgressDialog pDialog;
 
@@ -33,8 +41,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //Logs in user if already logged in
         if(fbAuth.getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
+            startMainActivity();
         }
 
         //Sets the view
@@ -52,8 +59,6 @@ public class LoginActivity extends AppCompatActivity {
         // Progress dialog
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
-
-        fbAuth = FirebaseAuth.getInstance();
 
         //Sets register button action
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -108,11 +113,8 @@ public class LoginActivity extends AppCompatActivity {
                                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                                     }
                                 } else {
-                                    //TODO: Add check for existing profile. Create if not there.
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     hideDialog();
-                                    startActivity(intent);
-                                    finish();
+                                    startMainActivity();
                                 }
                             }
                         });
@@ -130,6 +132,12 @@ public class LoginActivity extends AppCompatActivity {
     private void hideDialog() {
         if (pDialog.isShowing())
             pDialog.dismiss();
+    }
+
+    private void startMainActivity() {
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(i);
+        finish();
     }
 
 }
