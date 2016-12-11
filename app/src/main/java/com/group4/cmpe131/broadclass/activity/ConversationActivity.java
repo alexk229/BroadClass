@@ -6,10 +6,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +45,7 @@ public class ConversationActivity extends AppCompatActivity {
     private LayoutInflater inflater;
     private LinearLayout conversationLayout;
     private TextView conversationFooter, chatMsgText;
+    private ScrollView chatScrollView;
     private static String currentTime;
 
     @Override
@@ -82,6 +86,8 @@ public class ConversationActivity extends AppCompatActivity {
 
         root = FirebaseDatabase.getInstance().getReference().child(chatroomTitle);
 
+        chatScrollView = (ScrollView) findViewById(R.id.conversation_scroller);
+
         //Sets send message button action
         sendMsgButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +125,29 @@ public class ConversationActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_conversation, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.action_group_info) {
+            Intent intent = new Intent(ConversationActivity.this, GroupInfoActivity.class);
+            intent.putExtra(Intent.EXTRA_TITLE, chatroomTitle);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     //Sends message
     /* Add a left-aligned text bubble to the end of the chat. */
     private void addLeftBubble(String name, String content, String time) {
@@ -127,6 +156,14 @@ public class ConversationActivity extends AppCompatActivity {
         fillBubbleFields(bubble, name, content, time);
 
         conversationLayout.addView(bubble, conversationLayout.getChildCount() - 1);
+
+        chatScrollView.post(new Runnable()
+        {
+            public void run()
+            {
+                chatScrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
     }
 
     /* Add a right-aligned text bubble to the end of the chat. */
@@ -136,6 +173,14 @@ public class ConversationActivity extends AppCompatActivity {
         fillBubbleFields(bubble, name, content, time);
 
         conversationLayout.addView(bubble, conversationLayout.getChildCount() - 1);
+
+        chatScrollView.post(new Runnable()
+        {
+            public void run()
+            {
+                chatScrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
     }
 
     /* Fill the text fields of a text bubble. Invoked by addLeftBubble() and addRightBubble(). */
@@ -183,10 +228,11 @@ public class ConversationActivity extends AppCompatActivity {
 
                 case "Timestamp":
                     time = snapshot.getValue().toString();
+
+                    //Converts timestamp to appropriate format
                     Long temp = Long.parseLong(time);
-                    SimpleDateFormat format = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+                    SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                     time = format.format(new Date(temp));
-                    System.out.println(time);
 
             }
 

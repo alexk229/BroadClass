@@ -151,7 +151,6 @@
     <string name="new_class">New Class</string>
     <string name="search">Search</string>
     <string name="join">Join</string>
-    <string name="title_activity_register2">RegisterActivity2</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 
@@ -241,4 +240,8 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+
+    <!-- String related to conversation activity -->
+    <string name="action_group_info">Group info</string>
+    <string name="title_activity_group_info">GroupInfoActivity</string>
 </resources>
