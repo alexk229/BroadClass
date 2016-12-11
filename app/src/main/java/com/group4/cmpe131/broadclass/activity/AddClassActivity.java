@@ -18,7 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.adapter.ClassSearchResultListAdapter;
-import com.group4.cmpe131.broadclass.util.ClassSearchResult;
+import com.group4.cmpe131.broadclass.util.BCClassInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,10 +46,10 @@ public class AddClassActivity extends AppCompatActivity {
         addClassActionBar.setDisplayHomeAsUpEnabled(true);
 
         //Fake results.
-        List<ClassSearchResult> results = new ArrayList<ClassSearchResult>();
-        results.add(new ClassSearchResult("CMPE 131", "Badari Eswar"));
-        results.add(new ClassSearchResult("CMPE 124", "Haluk Ozemek"));
-        results.add(new ClassSearchResult("ME 109", "Asdfghjkl"));
+        List<BCClassInfo> results = new ArrayList<BCClassInfo>();
+        /*results.add(new BCClassInfo("CMPE 131", "Badari Eswar"));
+        results.add(new BCClassInfo("CMPE 124", "Haluk Ozemek"));
+        results.add(new BCClassInfo("ME 109", "Asdfghjkl"));*/
 
         listAdapter = new ClassSearchResultListAdapter(this, results);
         ListView resultsView = (ListView) findViewById(R.id.class_search_results);

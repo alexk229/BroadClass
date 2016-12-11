@@ -7,30 +7,30 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.group4.cmpe131.broadclass.util.BCClassInfo;
 import com.group4.cmpe131.broadclass.R;
+import com.group4.cmpe131.broadclass.util.BCClassInfo;
 
 import java.util.List;
 
-public class ClassSearchResultListAdapter extends BaseAdapter {
+public class ClassListItemAdapter extends BaseAdapter {
     private Context mContext;
-    private List<BCClassInfo> mSearchResults;
+    private List<BCClassInfo> mList;
 
-    public ClassSearchResultListAdapter(Context context, List<BCClassInfo> resultList) {
+    public ClassListItemAdapter(Context context, List<BCClassInfo> list) {
         mContext = context;
-        mSearchResults = resultList;
+        mList = list;
     }
 
     public int getCount() {
-        return mSearchResults.size();
+        return mList.size();
     }
 
     public View getView(int position, View view, ViewGroup parent) {
         LayoutInflater i = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        view = i.inflate(R.layout.class_search_result, parent, false);
+        view = i.inflate(R.layout.class_list_item, parent, false);
 
-        ((TextView) view.findViewById(R.id.class_search_result_title)).setText("PLACEHOLDER"/*mSearchResults.get(position).getName()*/);
-        ((TextView) view.findViewById(R.id.class_search_result_professor)).setText("PLACEHOLDER"/*mSearchResults.get(position).getProfessor()*/);
+        ((TextView) view.findViewById(R.id.class_list_item_title)).setText(mList.get(position).getClassName());
+        ((TextView) view.findViewById(R.id.class_list_item_professor)).setText(mList.get(position).getProfessorName());
 
         return view;
     }
@@ -40,6 +40,10 @@ public class ClassSearchResultListAdapter extends BaseAdapter {
     }
 
     public Object getItem(int position) {
-        return mSearchResults.get(position);
+        return mList.get(position);
+    }
+
+    public void appendToList(BCClassInfo classInfo) {
+        mList.add(classInfo);
     }
 }
