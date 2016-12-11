@@ -17,6 +17,7 @@
         android:layout_margin="16dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        app:layout_anchorGravity="bottom|right|end"/>
+        app:layout_anchorGravity="bottom|right|end"
+        app:backgroundTint="@android:color/holo_orange_light" />
 
 </RelativeLayout>

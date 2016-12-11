@@ -9,14 +9,16 @@
     android:layout_marginTop="@dimen/bubble_small_margin"
     android:layout_marginEnd="@dimen/bubble_small_margin"
     android:layout_marginBottom="@dimen/bubble_small_margin"
-    android:background="@color/bg_message">
+    android:background="@color/input_register">
+
     <TextView
         android:id="@+id/bubble_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/bubble_field_margin"
-        android:textColor="@color/bubble_text"
+        android:textColor="@android:color/black"
         android:textStyle="normal|bold" />
+
     <TextView
         android:id="@+id/bubble_content"
         android:layout_width="match_parent"
