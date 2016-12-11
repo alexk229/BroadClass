@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -67,7 +68,12 @@ public class UserProfileActivity extends AppCompatActivity {
         mProfilePic = (CircleImageView) findViewById(R.id.profile_image);
         userBio = (TextView)findViewById(R.id.user_bio);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.user_profile_toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
         cameraButton = (FloatingActionButton) findViewById(R.id.camera_fab);
 
         //Validates if user is logged in
@@ -83,11 +89,6 @@ public class UserProfileActivity extends AppCompatActivity {
                         .into(mProfilePic);
             }
         }
-
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         //Checks permission of device
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
