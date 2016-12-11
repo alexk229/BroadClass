@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.group4.cmpe131.broadclass.R;
@@ -26,10 +28,13 @@ import java.util.List;
 import java.util.Map;
 
 public class AddClassActivity extends AppCompatActivity {
+    FirebaseUser fbUser;
     DatabaseReference firebaseRoot;
+
     ClassSearchResultListAdapter listAdapter;
 
     public AddClassActivity() {
+        fbUser = FirebaseAuth.getInstance().getCurrentUser();
         firebaseRoot = FirebaseDatabase.getInstance().getReference().getRoot();
     }
 
@@ -116,9 +121,9 @@ public class AddClassActivity extends AppCompatActivity {
                 }
 
                 if (wantToCloseDialog) {
-                    Map<String, Object> map = new HashMap<String, Object>();
-                    map.put(classTitle.getText().toString(), "");
-                    firebaseRoot.updateChildren(map);
+                    DatabaseReference classRef = firebaseRoot.child("Classes").push();
+                    classRef.child("Name").setValue(classTitle.getText().toString());
+                    classRef.child("Professor").setValue(fbUser.getUid());
 
                     //else dialog stays open.
                     alert.dismiss();
