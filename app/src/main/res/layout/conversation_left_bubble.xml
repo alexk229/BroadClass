@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/bubble_padding"
+    android:layout_marginStart="@dimen/bubble_small_margin"
+    android:layout_marginTop="@dimen/bubble_small_margin"
+    android:layout_marginEnd="@dimen/bubble_large_margin"
+    android:layout_marginBottom="@dimen/bubble_small_margin"
+    android:background="#3169CB">
+
+    <TextView
+        android:id="@+id/bubble_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/bubble_field_margin"
+        android:textColor="@color/bubble_text"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/bubble_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/bubble_text" />
+    <TextView
+        android:id="@+id/bubble_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/bubble_field_margin"
+        android:textSize="12sp"
+        android:textColor="@color/bubble_text" />
+</LinearLayout>
