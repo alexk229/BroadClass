@@ -19,8 +19,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.group4.cmpe131.broadclass.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -38,6 +43,7 @@ public class ConversationActivity extends AppCompatActivity {
     private LayoutInflater inflater;
     private LinearLayout conversationLayout;
     private TextView conversationFooter, chatMsgText;
+    private static String currentTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +71,9 @@ public class ConversationActivity extends AppCompatActivity {
         inflater = getLayoutInflater();
         conversationLayout = (LinearLayout) findViewById(R.id.conversation_layout);
         conversationFooter = (TextView) findViewById(R.id.conversation_footer);
+
+        Calendar calendar = Calendar.getInstance();
+        currentTime = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
 
         conversationFooter.requestFocus();
 
@@ -146,6 +155,7 @@ public class ConversationActivity extends AppCompatActivity {
         Map<String, Object> userMsgMap = new HashMap<String, Object>();
         userMsgMap.put("Name", username);
         userMsgMap.put("Msg", inputMsgText.getText().toString());
+        userMsgMap.put("Timestamp", ServerValue.TIMESTAMP);
 
         messageRoot.updateChildren(userMsgMap);
     }
@@ -156,7 +166,7 @@ public class ConversationActivity extends AppCompatActivity {
 
     //Creates message conversation
     private void appendChatConversation(DataSnapshot dataSnapshot) {
-        String name = "", content = "", time = "12:34, 9 Dec 2016"; //TODO: Actual time.
+        String name = "", content = "", time = ""; //TODO: Actual time.
 
         Iterator i = dataSnapshot.getChildren().iterator();
 
@@ -172,11 +182,15 @@ public class ConversationActivity extends AppCompatActivity {
                     content = (String) snapshot.getValue();
                     break;
 
+                case "Timestamp":
+                    time = snapshot.getValue().toString();
+                    time = getTimeStamp(time.toString());
+                    break;
                 default:
                     break;
             }
 
-            if(name != "" && content != "") {
+            if(name != "" && content != "" && time != "") {
                 if(name.equals(username)) {
                     addRightBubble(name, content, time);
                 }
@@ -187,7 +201,27 @@ public class ConversationActivity extends AppCompatActivity {
 
                 name = "";
                 content = "";
+                time = "";
             }
         }
+    }
+
+    public static String getTimeStamp(String dateStr) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timestamp = "";
+
+        currentTime = currentTime.length() < 2 ? "0" + currentTime : currentTime;
+
+        try {
+            Date date = format.parse(dateStr);
+            SimpleDateFormat todayFormat = new SimpleDateFormat("dd");
+            String dateToday = todayFormat.format(date);
+            format = dateToday.equals(currentTime) ? new SimpleDateFormat("hh:mm a") : new SimpleDateFormat("dd LLL, hh:mm a");
+            String date1 = format.format(date);
+            timestamp = date1.toString();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return timestamp;
     }
 }

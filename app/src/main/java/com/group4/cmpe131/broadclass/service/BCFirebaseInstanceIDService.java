@@ -9,8 +9,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.group4.cmpe131.broadclass.app.Config;
 
-public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
-    private static final String TAG = MyFirebaseInstanceIDService.class.getSimpleName();
+public class BCFirebaseInstanceIDService extends FirebaseInstanceIdService {
+    private static final String TAG = BCFirebaseInstanceIDService.class.getSimpleName();
 
     @Override
     public void onTokenRefresh() {
@@ -20,7 +20,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         // Saving reg id to shared preferences
         storeRegIdInPref(refreshedToken);
 
-        // sending reg id to your server
+        // sending reg id to server
         sendRegistrationToServer(refreshedToken);
 
         // Notify UI that registration has completed, so the progress indicator can be hidden.

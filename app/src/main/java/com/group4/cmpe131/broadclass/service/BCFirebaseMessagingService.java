@@ -15,9 +15,9 @@ import com.group4.cmpe131.broadclass.util.NotificationUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+public class BCFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
+    private static final String TAG = BCFirebaseMessagingService.class.getSimpleName();
 
     private NotificationUtils notificationUtils;
 
