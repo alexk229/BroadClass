@@ -80,12 +80,12 @@ public class ClassFragment extends Fragment {
         classListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(getActivity(), ClassDetailActivity.class);
+                Intent intent = new Intent(getActivity(), ClassDetailActivity.class);
 
                 //Pass the Class ID to the detail activity.
-                i.putExtra("ClassID", ((BCClassInfo) classAdapter.getItem(position)).getClassID());
+                intent.putExtra("ClassID", ((BCClassInfo) classAdapter.getItem(position)).getClassID());
 
-                startActivity(i);
+                startActivity(intent);
             }
         });
 

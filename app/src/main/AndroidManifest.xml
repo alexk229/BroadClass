@@ -84,6 +84,7 @@
             </intent-filter>
         </service>
         <!-- ./Firebase Notifications -->
+        <activity android:name=".activity.GroupInfoActivity"></activity>
     </application>
 
 </manifest>
