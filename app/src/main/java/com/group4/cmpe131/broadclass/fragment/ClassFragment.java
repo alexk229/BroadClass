@@ -72,8 +72,6 @@ public class ClassFragment extends Fragment {
         // Inflate the layout for this fragment
         View classView = inflater.inflate(R.layout.fragment_class, container, false);
 
-
-
         classListView = (ListView) classView.findViewById(R.id.class_list_view);
         classListView.setAdapter(classAdapter);
 
