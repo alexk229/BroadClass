@@ -3,6 +3,7 @@ package com.group4.cmpe131.broadclass.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -16,13 +17,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText inputEmail, inputPassword, inputConfirmPassword, inputFirstName, inputLastName;
     private Button btnRegister, btnLogin;
+
     private FirebaseAuth fbAuth;
+    private DatabaseReference fbRoot;
+
     private ProgressDialog pDialog;
 
     @Override
@@ -127,10 +136,9 @@ public class RegisterActivity extends AppCompatActivity {
                         } else {
                             hideDialog();
                             Toast.makeText(RegisterActivity.this, "Registration Successful" , Toast.LENGTH_SHORT).show();
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(firstName + " " + lastName)
-                                    .build();
-                            fbAuth.getCurrentUser().updateProfile(profileUpdates);
+
+                            addUserToDatabase(firstName, lastName);
+
                             startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                             finish();
                         }
@@ -158,6 +166,35 @@ public class RegisterActivity extends AppCompatActivity {
     private void hideDialog() {
         if (pDialog.isShowing())
             pDialog.dismiss();
+    }
+
+    private void addUserToDatabase(String firstName, String lastName) {
+        final String displayName = firstName + " " + lastName;
+
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(displayName)
+                .build();
+
+        fbAuth.getCurrentUser().updateProfile(profileUpdates);
+
+        fbRoot = FirebaseDatabase.getInstance().getReference().getRoot();
+
+        final DatabaseReference fbProfile = fbRoot.child("Profiles").child(fbAuth.getCurrentUser().getUid());
+
+        //Check if User exists in database yet.
+        fbProfile.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists() == false) {
+                    //Write name and empty bio to child of Profiles with key getUid().
+                    fbProfile.child("Name").setValue(displayName);
+                    fbProfile.child("Bio").setValue("");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
 
     @Override
