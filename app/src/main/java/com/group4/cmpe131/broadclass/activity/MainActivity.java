@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -90,12 +91,16 @@ public class MainActivity extends AppCompatActivity
         if (user != null) {
             // User is signed in
             String displayName = user.getDisplayName();
+            Uri profilePic = user.getPhotoUrl();
 
             // If the above were null, iterate the provider data
             // and set with the first non null data
             for (UserInfo userInfo : user.getProviderData()) {
                 if (displayName == null && userInfo.getDisplayName() != null) {
                     displayName = userInfo.getDisplayName();
+                }
+                if (profilePic == null && userInfo.getPhotoUrl() != null) {
+                    profilePic = userInfo.getPhotoUrl();
                 }
             }
 
@@ -105,10 +110,14 @@ public class MainActivity extends AppCompatActivity
 
             //Displays profile pic
                 //If fails attempt to obtain profile picture from firebase url else use default profile pic
+            if(profilePic != null) {
                 Glide.with(this.getApplicationContext())
-                        .load(user.getPhotoUrl().toString())
+                        .load(profilePic.toString())
                         .error(R.drawable.com_facebook_profile_picture_blank_portrait)
                         .into(mProfilePic);
+            } else {
+
+            }
         }
 
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
