@@ -9,24 +9,24 @@
     android:layout_marginTop="@dimen/bubble_small_margin"
     android:layout_marginEnd="@dimen/bubble_small_margin"
     android:layout_marginBottom="@dimen/bubble_small_margin"
-    android:background="@color/bg_message">
+    android:background="@color/btn_login_bg">
     <TextView
         android:id="@+id/bubble_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/bubble_field_margin"
-        android:textColor="@color/bubble_text"
+        android:textColor="@color/bodyTextColor"
         android:textStyle="normal|bold" />
     <TextView
         android:id="@+id/bubble_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/bubble_text" />
+        android:textColor="@color/bodyTextColor" />
     <TextView
         android:id="@+id/bubble_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/bubble_field_margin"
         android:textSize="12sp"
-        android:textColor="@color/bubble_text" />
+        android:textColor="@color/bodyTextColor" />
 </LinearLayout>
