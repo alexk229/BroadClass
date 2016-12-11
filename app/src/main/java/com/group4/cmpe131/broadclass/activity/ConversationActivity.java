@@ -111,9 +111,7 @@ public class ConversationActivity extends AppCompatActivity {
         });
     }
 
-<<<<<<< HEAD
     //Sends message
-=======
     /* Add a left-aligned text bubble to the end of the chat. */
     private void addLeftBubble(String name, String content, String time) {
         View bubble = inflater.inflate(R.layout.conversation_left_bubble, conversationLayout, false);

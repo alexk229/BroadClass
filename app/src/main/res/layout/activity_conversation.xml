@@ -9,10 +9,11 @@
         android:id="@+id/conversation_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#3169CB"
+        android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
     <ScrollView
         android:id="@+id/conversation_scroller"
         android:layout_width="match_parent"
@@ -31,6 +32,7 @@
                 android:focusableInTouchMode="true" />
         </LinearLayout>
     </ScrollView>
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
