@@ -121,9 +121,14 @@ public class AddClassActivity extends AppCompatActivity {
                 }
 
                 if (wantToCloseDialog) {
+                    //Add class to class list.
                     DatabaseReference classRef = firebaseRoot.child("Classes").push();
                     classRef.child("Name").setValue(classTitle.getText().toString());
                     classRef.child("Professor").setValue(fbUser.getUid());
+
+                    //Add class key to user's class list, with professor flag set to true.
+                    DatabaseReference userClassListRef = firebaseRoot.child("Profiles").child(fbUser.getUid()).child("Classes");
+                    userClassListRef.child(classRef.getKey()).setValue(true);
 
                     //else dialog stays open.
                     alert.dismiss();
