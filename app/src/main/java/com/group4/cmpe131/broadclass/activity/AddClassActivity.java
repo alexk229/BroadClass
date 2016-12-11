@@ -12,16 +12,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.group4.cmpe131.broadclass.R;
+import com.group4.cmpe131.broadclass.adapter.ClassSearchResultListAdapter;
+import com.group4.cmpe131.broadclass.util.ClassSearchResult;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AddClassActivity extends AppCompatActivity {
     DatabaseReference firebaseRoot;
+    ClassSearchResultListAdapter listAdapter;
 
     public AddClassActivity() {
         firebaseRoot = FirebaseDatabase.getInstance().getReference().getRoot();
@@ -38,6 +44,16 @@ public class AddClassActivity extends AppCompatActivity {
         ActionBar addClassActionBar = getSupportActionBar();
 
         addClassActionBar.setDisplayHomeAsUpEnabled(true);
+
+        //Fake results.
+        List<ClassSearchResult> results = new ArrayList<ClassSearchResult>();
+        results.add(new ClassSearchResult("CMPE 131", "Badari Eswar"));
+        results.add(new ClassSearchResult("CMPE 124", "Haluk Ozemek"));
+        results.add(new ClassSearchResult("ME 109", "Asdfghjkl"));
+
+        listAdapter = new ClassSearchResultListAdapter(this, results);
+        ListView resultsView = (ListView) findViewById(R.id.class_search_results);
+        resultsView.setAdapter(listAdapter);
     }
 
     @Override

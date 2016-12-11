@@ -149,4 +149,5 @@
     <!-- Class search -->
     <string name="new_class">New Class</string>
     <string name="search">Search</string>
+    <string name="join">Join</string>
 </resources>
