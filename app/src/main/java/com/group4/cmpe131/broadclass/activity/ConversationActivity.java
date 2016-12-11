@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +43,7 @@ public class ConversationActivity extends AppCompatActivity {
     private LayoutInflater inflater;
     private LinearLayout conversationLayout;
     private TextView conversationFooter, chatMsgText;
+    private ScrollView chatScrollView;
     private static String currentTime;
 
     @Override
@@ -81,6 +83,8 @@ public class ConversationActivity extends AppCompatActivity {
         //sets display name for chat conversation
 
         root = FirebaseDatabase.getInstance().getReference().child(chatroomTitle);
+
+        chatScrollView = (ScrollView) findViewById(R.id.conversation_scroller);
 
         //Sets send message button action
         sendMsgButton.setOnClickListener(new View.OnClickListener() {
@@ -127,6 +131,14 @@ public class ConversationActivity extends AppCompatActivity {
         fillBubbleFields(bubble, name, content, time);
 
         conversationLayout.addView(bubble, conversationLayout.getChildCount() - 1);
+
+        chatScrollView.post(new Runnable()
+        {
+            public void run()
+            {
+                chatScrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
     }
 
     /* Add a right-aligned text bubble to the end of the chat. */
@@ -136,6 +148,14 @@ public class ConversationActivity extends AppCompatActivity {
         fillBubbleFields(bubble, name, content, time);
 
         conversationLayout.addView(bubble, conversationLayout.getChildCount() - 1);
+
+        chatScrollView.post(new Runnable()
+        {
+            public void run()
+            {
+                chatScrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
     }
 
     /* Fill the text fields of a text bubble. Invoked by addLeftBubble() and addRightBubble(). */
@@ -184,7 +204,7 @@ public class ConversationActivity extends AppCompatActivity {
                 case "Timestamp":
                     time = snapshot.getValue().toString();
                     Long temp = Long.parseLong(time);
-                    SimpleDateFormat format = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+                    SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                     time = format.format(new Date(temp));
                     System.out.println(time);
 
