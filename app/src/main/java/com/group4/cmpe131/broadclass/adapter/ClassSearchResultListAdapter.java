@@ -29,8 +29,8 @@ public class ClassSearchResultListAdapter extends BaseAdapter {
         LayoutInflater i = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view = i.inflate(R.layout.class_search_result, parent, false);
 
-        ((TextView) view.findViewById(R.id.class_search_result_title)).setText("PLACEHOLDER"/*mSearchResults.get(position).getName()*/);
-        ((TextView) view.findViewById(R.id.class_search_result_professor)).setText("PLACEHOLDER"/*mSearchResults.get(position).getProfessor()*/);
+        ((TextView) view.findViewById(R.id.class_search_result_title)).setText(mSearchResults.get(position).getClassName());
+        ((TextView) view.findViewById(R.id.class_search_result_professor)).setText(mSearchResults.get(position).getProfessorName());
 
         return view;
     }
@@ -41,5 +41,13 @@ public class ClassSearchResultListAdapter extends BaseAdapter {
 
     public Object getItem(int position) {
         return mSearchResults.get(position);
+    }
+
+    public void add(BCClassInfo classInfo) {
+        mSearchResults.add(classInfo);
+    }
+
+    public void clear() {
+        mSearchResults.clear();
     }
 }

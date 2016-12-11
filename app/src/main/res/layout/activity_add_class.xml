@@ -20,7 +20,9 @@
         android:id="@+id/class_search_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/search"/>
+        android:hint="@string/search"
+        android:imeActionId="@integer/classSearchActionId"
+        android:imeOptions="actionSearch" />
     <ListView
         android:id="@+id/class_search_results"
         android:layout_width="match_parent"
