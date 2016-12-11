@@ -9,7 +9,7 @@
     android:layout_marginTop="@dimen/bubble_small_margin"
     android:layout_marginEnd="@dimen/bubble_small_margin"
     android:layout_marginBottom="@dimen/bubble_small_margin"
-    android:background="@color/input_register">
+    android:background="@color/btn_login_bg">
     <TextView
         android:id="@+id/bubble_name"
         android:layout_width="match_parent"
