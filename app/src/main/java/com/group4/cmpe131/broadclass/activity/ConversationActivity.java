@@ -19,8 +19,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.group4.cmpe131.broadclass.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -38,6 +42,7 @@ public class ConversationActivity extends AppCompatActivity {
     private LayoutInflater inflater;
     private LinearLayout conversationLayout;
     private TextView conversationFooter, chatMsgText;
+    private static String currentTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,9 @@ public class ConversationActivity extends AppCompatActivity {
         conversationLayout = (LinearLayout) findViewById(R.id.conversation_layout);
         conversationFooter = (TextView) findViewById(R.id.conversation_footer);
 
+        Calendar calendar = Calendar.getInstance();
+        currentTime = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+
         conversationFooter.requestFocus();
 
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -91,7 +99,7 @@ public class ConversationActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                appendChatConversation(dataSnapshot);
+                //appendChatConversation(dataSnapshot);
             }
 
             @Override
@@ -146,6 +154,7 @@ public class ConversationActivity extends AppCompatActivity {
         Map<String, Object> userMsgMap = new HashMap<String, Object>();
         userMsgMap.put("Name", username);
         userMsgMap.put("Msg", inputMsgText.getText().toString());
+        userMsgMap.put("Timestamp", ServerValue.TIMESTAMP);
 
         messageRoot.updateChildren(userMsgMap);
     }
@@ -156,7 +165,7 @@ public class ConversationActivity extends AppCompatActivity {
 
     //Creates message conversation
     private void appendChatConversation(DataSnapshot dataSnapshot) {
-        String name = "", content = "", time = "12:34, 9 Dec 2016"; //TODO: Actual time.
+        String name = "", content = "", time = ""; //TODO: Actual time.
 
         Iterator i = dataSnapshot.getChildren().iterator();
 
@@ -172,11 +181,16 @@ public class ConversationActivity extends AppCompatActivity {
                     content = (String) snapshot.getValue();
                     break;
 
-                default:
-                    break;
+                case "Timestamp":
+                    time = snapshot.getValue().toString();
+                    Long temp = Long.parseLong(time);
+                    SimpleDateFormat format = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+                    time = format.format(new Date(temp));
+                    System.out.println(time);
+
             }
 
-            if(name != "" && content != "") {
+            if(name != "" && content != "" && time != "") {
                 if(name.equals(username)) {
                     addRightBubble(name, content, time);
                 }
@@ -187,6 +201,7 @@ public class ConversationActivity extends AppCompatActivity {
 
                 name = "";
                 content = "";
+                time = "";
             }
         }
     }

@@ -5,11 +5,11 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -66,8 +66,7 @@ public class NotificationUtils {
         final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
                 mContext);
 
-        final Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                + "://" + mContext.getPackageName() + "/raw/notification");
+        final Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         if (!TextUtils.isEmpty(imageUrl)) {
 
@@ -102,6 +101,7 @@ public class NotificationUtils {
                 .setContentIntent(resultPendingIntent)
                 .setSound(alarmSound)
                 .setStyle(inboxStyle)
+                .setLights(Color.RED, 3000, 3000)
                 .setVibrate(new long[] {1000, 1000, 1000})
                 .setWhen(getTimeMilliSec(timeStamp))
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -135,6 +135,7 @@ public class NotificationUtils {
                 .setContentIntent(resultPendingIntent)
                 .setSound(alarmSound)
                 .setStyle(bigPictureStyle)
+                .setLights(Color.RED, 3000, 3000)
                 .setVibrate(new long[] {1000, 1000, 1000})
                 .setWhen(getTimeMilliSec(timeStamp))
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -175,24 +176,14 @@ public class NotificationUtils {
 
     // Playing notification sound
     public void playNotificationSound() {
-//        try {
-//            Uri alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-//                    + "://" + mContext.getPackageName() + "/raw/notification");
-//            Ringtone r = RingtoneManager.getRingtone(mContext, alarmSound);
-//            r.play();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
         try {
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(mContext.getApplicationContext(), notification);
+            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(mContext, alarmSound);
             r.play();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
     /**
      * Method checks if the app is in background or not
      */

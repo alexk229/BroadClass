@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -18,6 +19,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,6 +53,9 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth fbAuth;
     private FirebaseUser user;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
+
+    //For debugging purposes
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,17 +132,28 @@ public class MainActivity extends AppCompatActivity
                         // now subscribe to `global` topic to receive app wide notifications
                         FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
 
+                        displayFirebaseRegId();
+
                     } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
                         // new push notification is received
 
                         String message = intent.getStringExtra("message");
-
-                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-
+                        Toast.makeText(getApplicationContext(), "Push notification: " + message, Toast.LENGTH_LONG).show();
                     }
                 }
             };
+
+            displayFirebaseRegId();
         }
+    }
+
+    // Fetches reg id from shared preferences
+    // and displays on the screen
+    private void displayFirebaseRegId() {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
+        String regId = pref.getString("regId", null);
+
+        Log.e(TAG, "Firebase reg id: " + regId);
     }
 
     //Sets up tabs

@@ -20,4 +20,7 @@
 
     <!-- Chat -->
     <color name="bubble_text">#ffffff</color>
+    <color name="list_divider">#dedede</color>
+    <color name="bg_bubble_self">#E1E1E1</color>
+
 </resources>
