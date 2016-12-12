@@ -1,7 +1,12 @@
 package com.group4.cmpe131.broadclass.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,27 +31,33 @@ import com.google.firebase.database.ServerValue;
 import com.group4.cmpe131.broadclass.R;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ConversationActivity extends AppCompatActivity {
 
-    private ImageButton sendMsgButton;
+    private CircleImageView sendMsgButton;
+    private ImageButton sendImageButton;
     private EditText inputMsgText;
     private FirebaseUser user;
     private String username, chatroomTitle;
+    private Image imageToSend;
     private DatabaseReference root;
     private String tempChatKey;
+    private Map<String, Object> userMsgMap;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int REQUEST_IMAGE_CAPTURE = 111;
+    public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
     //Layout variables.
     private LayoutInflater inflater;
     private LinearLayout conversationLayout;
     private TextView conversationFooter, chatMsgText;
     private ScrollView chatScrollView;
-    private static String currentTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +76,8 @@ public class ConversationActivity extends AppCompatActivity {
         username = getIntent().getStringExtra("username");
         conversationToolbar.setTitle(chatroomTitle);
 
-        sendMsgButton = (ImageButton) findViewById(R.id.send_msg_button);
+        sendMsgButton = (CircleImageView) findViewById(R.id.send_msg_button);
+        sendImageButton = (ImageButton) findViewById(R.id.send_image_button);
         inputMsgText = (EditText) findViewById(R.id.input_msg_text);
 
         //TODO: change textview ui
@@ -74,9 +86,6 @@ public class ConversationActivity extends AppCompatActivity {
         inflater = getLayoutInflater();
         conversationLayout = (LinearLayout) findViewById(R.id.conversation_layout);
         conversationFooter = (TextView) findViewById(R.id.conversation_footer);
-
-        Calendar calendar = Calendar.getInstance();
-        currentTime = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
 
         conversationFooter.requestFocus();
 
@@ -88,11 +97,21 @@ public class ConversationActivity extends AppCompatActivity {
 
         chatScrollView = (ScrollView) findViewById(R.id.conversation_scroller);
 
+        userMsgMap = new HashMap<String, Object>();
+
         //Sets send message button action
         sendMsgButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMessage();
+                inputMsgText.setText(null);
+            }
+        });
+
+        sendImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchCamera();
                 inputMsgText.setText(null);
             }
         });
@@ -148,6 +167,15 @@ public class ConversationActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 0) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                sendImageButton.setEnabled(true);
+            }
+        }
+    }
+
     //Sends message
     /* Add a left-aligned text bubble to the end of the chat. */
     private void addLeftBubble(String name, String content, String time) {
@@ -196,12 +224,32 @@ public class ConversationActivity extends AppCompatActivity {
         root.updateChildren(keyMap);
 
         DatabaseReference messageRoot = root.child(tempChatKey);
-        Map<String, Object> userMsgMap = new HashMap<String, Object>();
         userMsgMap.put("Name", username);
+        userMsgMap.put("Image", imageToSend);
         userMsgMap.put("Msg", inputMsgText.getText().toString());
         userMsgMap.put("Timestamp", ServerValue.TIMESTAMP);
 
         messageRoot.updateChildren(userMsgMap);
+    }
+
+    private void launchCamera() {
+        //Checks permission of device
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            }
+
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[] { Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE }, 0);
+            }
+        }
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(this.getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
     }
 
     private void showMembers(View view) {
