@@ -10,6 +10,8 @@
         android:background="@color/btn_login_bg"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
         <TextView
             android:id="@+id/class_list_item_title"
             android:layout_width="wrap_content"
