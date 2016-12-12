@@ -34,6 +34,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 
 import java.io.File;
@@ -53,6 +58,9 @@ public class UserProfileActivity extends AppCompatActivity {
     private TextView userBio;
     private FloatingActionButton cameraButton;
 
+    //Database ref for user bio
+    private DatabaseReference root;
+
     private String mImageFileLocation;
     private static final int REQUEST_IMAGE_CAPTURE = 111;
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
@@ -61,9 +69,6 @@ public class UserProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
-
-        firebaseAuth = FirebaseAuth.getInstance();
-        user = firebaseAuth.getCurrentUser();
 
         mProfilePic = (CircleImageView) findViewById(R.id.profile_image);
         userBio = (TextView)findViewById(R.id.user_bio);
@@ -76,6 +81,26 @@ public class UserProfileActivity extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);
         cameraButton = (FloatingActionButton) findViewById(R.id.camera_fab);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+
+        root = FirebaseDatabase.getInstance().getReference().getRoot()
+                .child("Profiles")
+                .child(user.getUid())
+                .child("Bio");
+
+        root.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                userBio.setText(dataSnapshot.getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         //Validates if user is logged in
         if (user != null) {
             toolbar.setTitle(user.getDisplayName().toString());
@@ -87,6 +112,10 @@ public class UserProfileActivity extends AppCompatActivity {
                         .load(user.getPhotoUrl().toString())
                         .error(R.drawable.com_facebook_profile_picture_blank_portrait)
                         .into(mProfilePic);
+            }
+
+            if(user.getUid() != null) {
+
             }
         }
 
@@ -161,6 +190,16 @@ public class UserProfileActivity extends AppCompatActivity {
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", photoFile));
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
+    }
+
+    private void updateUserBio(String newBio) {
+        root.setValue(newBio);
+        userBio.setText(newBio);
+    }
+
+    private String getUserBio(DataSnapshot dataSnapshot) {
+        String bio = dataSnapshot.getKey();
+        return bio;
     }
 
     @Override
@@ -271,11 +310,9 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 //Updates user profile
-                if(!editUserBio.getText().toString().isEmpty()) {
-                    userBio.setText(editUserBio.getText().toString());
-                }
-
                 //TODO: update information to sever
+                updateUserBio(editUserBio.getText().toString());
+
             }
         });
 

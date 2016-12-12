@@ -210,7 +210,7 @@ public class ConversationActivity extends AppCompatActivity {
 
     //Creates message conversation
     private void appendChatConversation(DataSnapshot dataSnapshot) {
-        String name = "", content = "", time = ""; //TODO: Actual time.
+        String name = "", content = "", time = "";
 
         Iterator i = dataSnapshot.getChildren().iterator();
 
@@ -233,6 +233,10 @@ public class ConversationActivity extends AppCompatActivity {
                     Long temp = Long.parseLong(time);
                     SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                     time = format.format(new Date(temp));
+                    break;
+
+                default:
+                    break;
 
             }
 
