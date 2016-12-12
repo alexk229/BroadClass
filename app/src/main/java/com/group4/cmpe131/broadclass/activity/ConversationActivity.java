@@ -39,14 +39,21 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ConversationActivity extends AppCompatActivity {
+    final public static String CHAT_ID = "CHAT_ID";
+    final public static String USERNAME = "USERNAME";
+
+    private FirebaseUser user;
+    private DatabaseReference fbRoot;
+
+    private String chatId;
 
     private CircleImageView sendMsgButton;
     private ImageButton sendImageButton;
     private EditText inputMsgText;
-    private FirebaseUser user;
+
     private String username, chatroomTitle;
     private Image imageToSend;
-    private DatabaseReference root;
+
     private String tempChatKey;
     private Map<String, Object> userMsgMap;
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -73,7 +80,9 @@ public class ConversationActivity extends AppCompatActivity {
         conversationAb.setDisplayShowTitleEnabled(false);
 
         chatroomTitle = getIntent().getStringExtra(Intent.EXTRA_TITLE);
-        username = getIntent().getStringExtra("username");
+        username = getIntent().getStringExtra(USERNAME);
+        chatId = getIntent().getStringExtra(CHAT_ID);
+
         conversationToolbar.setTitle(chatroomTitle);
 
         sendMsgButton = (CircleImageView) findViewById(R.id.send_msg_button);
@@ -93,7 +102,7 @@ public class ConversationActivity extends AppCompatActivity {
 
         //sets display name for chat conversation
 
-        root = FirebaseDatabase.getInstance().getReference().child(chatroomTitle);
+        fbRoot = FirebaseDatabase.getInstance().getReference().child(chatroomTitle);
 
         chatScrollView = (ScrollView) findViewById(R.id.conversation_scroller);
 
@@ -116,31 +125,16 @@ public class ConversationActivity extends AppCompatActivity {
             }
         });
 
-        root.addChildEventListener(new ChildEventListener() {
+        fbRoot.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 appendChatConversation(dataSnapshot);
             }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                //appendChatConversation(dataSnapshot);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            @Override public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+            @Override public void onChildRemoved(DataSnapshot dataSnapshot) {}
+            @Override public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+            @Override public void onCancelled(DatabaseError databaseError) {}
         });
     }
 
@@ -220,10 +214,10 @@ public class ConversationActivity extends AppCompatActivity {
 
     private void sendMessage() {
         Map<String, Object> keyMap = new HashMap<String, Object>();
-        tempChatKey = root.push().getKey();
-        root.updateChildren(keyMap);
+        tempChatKey = fbRoot.push().getKey();
+        fbRoot.updateChildren(keyMap);
 
-        DatabaseReference messageRoot = root.child(tempChatKey);
+        DatabaseReference messageRoot = fbRoot.child(tempChatKey);
         userMsgMap.put("Name", username);
         userMsgMap.put("Image", imageToSend);
         userMsgMap.put("Msg", inputMsgText.getText().toString());
