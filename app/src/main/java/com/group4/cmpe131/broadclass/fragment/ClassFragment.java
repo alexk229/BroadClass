@@ -40,6 +40,11 @@ public class ClassFragment extends Fragment {
     private DatabaseReference mFbRoot;
     private DatabaseReference mFbProfile;
 
+    final public static String CID = "ClassID";
+    final public static String CNAME = "ClassName";
+    final public static String PID = "ProfessorID";
+    final public static String PNAME = "ProfessorName";
+
     public ClassFragment() {
         mFbAuth = FirebaseAuth.getInstance();
 
@@ -96,7 +101,10 @@ public class ClassFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), ClassDetailActivity.class);
 
                 //Pass the Class ID to the detail activity.
-                intent.putExtra("ClassID", ((BCClassInfo) classAdapter.getItem(position)).getClassID());
+                intent.putExtra(CID, ((BCClassInfo) classAdapter.getItem(position)).getClassID());
+                intent.putExtra(CNAME, ((BCClassInfo) classAdapter.getItem(position)).getClassName());
+                intent.putExtra(PID, ((BCClassInfo) classAdapter.getItem(position)).getProfessorID());
+                intent.putExtra(PNAME, ((BCClassInfo) classAdapter.getItem(position)).getProfessorName());
 
                 startActivity(intent);
             }
