@@ -4,7 +4,9 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_message"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:weightSum="1">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/class_detail_toolbar"
         android:layout_width="match_parent"
@@ -13,4 +15,11 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/class_detail_announcements"
+        android:headerDividersEnabled="false" />
+
 </LinearLayout>
