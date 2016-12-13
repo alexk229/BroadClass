@@ -1,21 +1,17 @@
 package com.group4.cmpe131.broadclass.activity;
 
 import android.content.DialogInterface;
-import android.provider.ContactsContract;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,6 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.adapter.ClassSearchResultListAdapter;
 import com.group4.cmpe131.broadclass.util.BCClassInfo;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -38,10 +35,10 @@ public class AddClassActivity extends AppCompatActivity {
     DatabaseReference firebaseRoot;
     DatabaseReference fbClasses;
 
-    List<BCClassInfo> searchResults;
-    ClassSearchResultListAdapter listAdapter;
-    ListView resultsView;
-    EditText searchBox;
+    private List<BCClassInfo> searchResults;
+    private ClassSearchResultListAdapter listAdapter;
+    private ListView resultsView;
+    private MaterialSearchView searchView;
 
     public AddClassActivity() {
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -60,6 +57,7 @@ public class AddClassActivity extends AppCompatActivity {
         ActionBar addClassActionBar = getSupportActionBar();
 
         addClassActionBar.setDisplayHomeAsUpEnabled(true);
+        addClassActionBar.setDisplayHomeAsUpEnabled(true);
 
         //Initialize search results.
         searchResults = new ArrayList<BCClassInfo>();
@@ -69,101 +67,115 @@ public class AddClassActivity extends AppCompatActivity {
         resultsView.setAdapter(listAdapter);
 
         //Install listener for search button.
-        searchBox = (EditText) findViewById(R.id.class_search_text);
-        searchBox.setImeActionLabel("Search", KeyEvent.KEYCODE_ENTER);
-        searchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        searchView = (MaterialSearchView) findViewById(R.id.class_search_text);
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent e) {
-                if(e.getAction() == KeyEvent.ACTION_UP) {
-                    searchResults.clear();
+            public boolean onQueryTextSubmit(final String query) {
+                searchResults.clear();
 
-                    final String query = v.getText().toString().toLowerCase();
+                fbClasses.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String previousChild) {
+                        final BCClassInfo classInfo = new BCClassInfo();
 
-                    fbClasses.addChildEventListener(new ChildEventListener() {
-                        @Override
-                        public void onChildAdded(DataSnapshot dataSnapshot, String previousChild) {
-                            final BCClassInfo classInfo = new BCClassInfo();
+                        classInfo.setClassID(dataSnapshot.getKey());
 
-                            classInfo.setClassID(dataSnapshot.getKey());
+                        Iterator i = dataSnapshot.getChildren().iterator();
 
-                            Iterator i = dataSnapshot.getChildren().iterator();
+                        while (i.hasNext()) {
+                            DataSnapshot s = (DataSnapshot) i.next();
 
-                            while (i.hasNext()) {
-                                DataSnapshot s = (DataSnapshot) i.next();
+                            switch (s.getKey()) {
+                                case "Name":
+                                    if (query.contains(((String) s.getValue()).toLowerCase()) == false
+                                            && ((String) s.getValue()).toLowerCase().contains(query) == false) {
+                                        return;
+                                    }
 
-                                switch (s.getKey()) {
-                                    case "Name":
-                                        if (query.contains(((String) s.getValue()).toLowerCase()) == false
-                                                && ((String) s.getValue()).toLowerCase().contains(query) == false) {
-                                            return;
-                                        }
+                                    classInfo.setClassName((String) s.getValue());
+                                    break;
 
-                                        classInfo.setClassName((String) s.getValue());
-                                        break;
+                                case "Professor":
+                                    classInfo.setProfessorID((String) s.getValue());
 
-                                    case "Professor":
-                                        classInfo.setProfessorID((String) s.getValue());
+                                    DatabaseReference fbProfessor = firebaseRoot.child("Profiles")
+                                            .child(classInfo.getProfessorID());
 
-                                        DatabaseReference fbProfessor = firebaseRoot.child("Profiles")
-                                                .child(classInfo.getProfessorID());
+                                    fbProfessor.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            Iterator i = dataSnapshot.getChildren().iterator();
 
-                                        fbProfessor.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                Iterator i = dataSnapshot.getChildren().iterator();
+                                            while (i.hasNext()) {
+                                                DataSnapshot s = (DataSnapshot) i.next();
 
-                                                while (i.hasNext()) {
-                                                    DataSnapshot s = (DataSnapshot) i.next();
-
-                                                    if (s.getKey().equals("Name")) {
-                                                        classInfo.setProfessorName((String) s.getValue());
-                                                        listAdapter.notifyDataSetChanged();
-                                                        return;
-                                                    }
+                                                if (s.getKey().equals("Name")) {
+                                                    classInfo.setProfessorName((String) s.getValue());
+                                                    listAdapter.notifyDataSetChanged();
+                                                    return;
                                                 }
                                             }
+                                        }
 
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
-                                            }
-                                        });
-                                        break;
-                                }
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                        }
+                                    });
+                                    break;
                             }
-
-                            listAdapter.add(classInfo);
-                            listAdapter.notifyDataSetChanged();
                         }
 
-                        @Override
-                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                        }
+                        listAdapter.add(classInfo);
+                        listAdapter.notifyDataSetChanged();
+                    }
 
-                        @Override
-                        public void onChildRemoved(DataSnapshot dataSnapshot) {
-                        }
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    }
 
-                        @Override
-                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                        }
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                        }
-                    });
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                    }
 
-                }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
 
                 return true;
+
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Do some magic
+                return false;
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
             }
         });
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu m) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_add_class, m);
-        return super.onCreateOptionsMenu(m);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_add_class, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
+<!--    <item
         android:id="@+id/new_class_button"
         app:showAsAction="ifRoom"
-        android:title="@string/new_class" />
+        android:title="@string/new_class" />-->
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_action"
+        android:orderInCategory="100"
+        android:title="@string/abc_search_hint"
+        app:showAsAction="always" />
+
+    <item android:title="New Class"
+        android:id="@+id/new_class_button"
+        android:orderInCategory="101"
+        app:showAsAction="never" />
+
+
 </menu>
