@@ -14,14 +14,13 @@
         android:id="@+id/user_bio_layout"
         android:orientation="vertical">
 
-        <!-- TODO: Change large test to user bio information -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/user_bio"
             android:layout_margin="16dp"
             android:paddingTop="16dp"
-            android:text="@string/large_text"
+            android:text="This is my bio"
             android:textAlignment="center"
             android:layout_gravity="center"/>
         <Button

@@ -121,7 +121,6 @@ public class ConversationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 launchCamera();
-                inputMsgText.setText(null);
             }
         });
 

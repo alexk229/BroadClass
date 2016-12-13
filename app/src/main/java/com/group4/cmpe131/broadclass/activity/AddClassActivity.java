@@ -152,7 +152,7 @@ public class AddClassActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //Do some magic
+
                 return false;
             }
         });
@@ -160,12 +160,12 @@ public class AddClassActivity extends AppCompatActivity {
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
-                //Do some magic
+
             }
 
             @Override
             public void onSearchViewClosed() {
-                //Do some magic
+
             }
         });
     }
