@@ -79,9 +79,6 @@ public class ConversationActivity extends AppCompatActivity {
         sendMsgButton = (CircleImageView) findViewById(R.id.send_msg_button);
         inputMsgText = (EditText) findViewById(R.id.input_msg_text);
 
-        //TODO: change textview ui
-        //chatMsgText = (TextView) findViewById(R.id.chat_msg_text);
-
         //Set up Firebase stuff.
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
         fbRoot = FirebaseDatabase.getInstance().getReference().getRoot();

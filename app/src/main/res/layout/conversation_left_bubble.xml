@@ -11,7 +11,7 @@
         android:layout_marginTop="@dimen/bubble_small_margin"
         android:layout_marginEnd="@dimen/bubble_large_margin"
         android:layout_marginBottom="@dimen/bubble_small_margin"
-        android:background="#3169CB"
+        android:background="@drawable/bg_bubble_blue"
         android:orientation="vertical">
         <TextView
             android:id="@+id/bubble_name"
