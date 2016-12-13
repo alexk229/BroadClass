@@ -105,22 +105,24 @@ public class ConversationActivity extends AppCompatActivity {
                 fbRoot.child("Profiles").child(uid).child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        //Update name in member list.
-                        for (int i = 0; i < chatMemebers.size(); i++) {
-                            if (chatMemebers.get(i).getUID().equals(uid)) {
-                                chatMemebers.get(i).setName((String) dataSnapshot.getValue());
-                                break;
+                        if(dataSnapshot.exists()) {
+                            //Update name in member list.
+                            for (int i = 0; i < chatMemebers.size(); i++) {
+                                if (chatMemebers.get(i).getUID().equals(uid)) {
+                                    chatMemebers.get(i).setName((String) dataSnapshot.getValue());
+                                    break;
+                                }
                             }
-                        }
 
-                        //Update name in messages.
-                        for (int i = 0; i < messageListAdapter.getCount(); i++) {
-                            if (messageListAdapter.getItem(i).getUID().equals(uid)) {
-                                messageListAdapter.getItem(i).setName((String) dataSnapshot.getValue());
+                            //Update name in messages.
+                            for (int i = 0; i < messageListAdapter.getCount(); i++) {
+                                if (messageListAdapter.getItem(i).getUID().equals(uid)) {
+                                    messageListAdapter.getItem(i).setName((String) dataSnapshot.getValue());
+                                }
                             }
-                        }
 
-                        messageListAdapter.notifyDataSetChanged();
+                            messageListAdapter.notifyDataSetChanged();
+                        }
                     }
 
                     @Override

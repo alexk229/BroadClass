@@ -31,10 +31,6 @@ public class ClassDetailActivity extends AppCompatActivity {
     private FirebaseUser user;
     private FirebaseAuth mFbAuth;
 
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

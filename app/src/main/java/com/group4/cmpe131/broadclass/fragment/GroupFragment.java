@@ -60,14 +60,16 @@ public class GroupFragment extends Fragment {
                 groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterator i = dataSnapshot.getChildren().iterator();
+                        if(dataSnapshot.exists()) {
+                            Iterator i = dataSnapshot.getChildren().iterator();
 
-                        while(i.hasNext()) {
-                            DataSnapshot s = (DataSnapshot) i.next();
+                            while (i.hasNext()) {
+                                DataSnapshot s = (DataSnapshot) i.next();
 
-                            if(s.getKey().equals("Name")) {
-                                groupNameAdapter.add((String) s.getValue());
-                                groupNameAdapter.notifyDataSetChanged();
+                                if (s.getKey().equals("Name")) {
+                                    groupNameAdapter.add((String) s.getValue());
+                                    groupNameAdapter.notifyDataSetChanged();
+                                }
                             }
                         }
                     }
@@ -89,14 +91,16 @@ public class GroupFragment extends Fragment {
                 groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterator i = dataSnapshot.getChildren().iterator();
+                        if(dataSnapshot.exists()) {
+                            Iterator i = dataSnapshot.getChildren().iterator();
 
-                        while(i.hasNext()) {
-                            DataSnapshot s = (DataSnapshot) i.next();
+                            while (i.hasNext()) {
+                                DataSnapshot s = (DataSnapshot) i.next();
 
-                            if(s.getKey().equals("Name")) {
-                                groupNameAdapter.remove((String) s.getValue());
-                                groupNameAdapter.notifyDataSetChanged();
+                                if (s.getKey().equals("Name")) {
+                                    groupNameAdapter.remove((String) s.getValue());
+                                    groupNameAdapter.notifyDataSetChanged();
+                                }
                             }
                         }
                     }

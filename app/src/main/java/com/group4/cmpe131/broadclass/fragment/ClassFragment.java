@@ -136,43 +136,48 @@ public class ClassFragment extends Fragment {
         classReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot classSnapshot) {
-                    Iterator i = classSnapshot.getChildren().iterator();
+                    if(classSnapshot.exists()) {
+                        Iterator i = classSnapshot.getChildren().iterator();
 
-                while(i.hasNext()) {
-                    DataSnapshot s = (DataSnapshot) i.next();
-
-                    switch(s.getKey()) {
-                        case "Name":
-                            classInfo.setClassName((String) s.getValue());
-                            break;
-
-                        case "Professor":
-                            classInfo.setProfessorID((String) s.getValue());
-                            break;
-                    }
-                }
-
-                final DatabaseReference professorReference = mFbRoot.child("Profiles").child(classInfo.getProfessorID());
-
-                professorReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot professorSnapshot) {
-                        Iterator i = professorSnapshot.getChildren().iterator();
-
-                        while(i.hasNext()) {
+                        while (i.hasNext()) {
                             DataSnapshot s = (DataSnapshot) i.next();
 
-                            if(s.getKey().equals("Name")) {
-                                classInfo.setProfessorName((String) s.getValue());
-                                classAdapter.add(classInfo);
-                                classAdapter.notifyDataSetChanged();
+                            switch (s.getKey()) {
+                                case "Name":
+                                    classInfo.setClassName((String) s.getValue());
+                                    break;
+
+                                case "Professor":
+                                    classInfo.setProfessorID((String) s.getValue());
+                                    break;
                             }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {}
-                });
+                        final DatabaseReference professorReference = mFbRoot.child("Profiles").child(classInfo.getProfessorID());
+
+                        professorReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot professorSnapshot) {
+                                if(professorSnapshot.exists()) {
+                                    Iterator i = professorSnapshot.getChildren().iterator();
+
+                                    while (i.hasNext()) {
+                                        DataSnapshot s = (DataSnapshot) i.next();
+
+                                        if (s.getKey().equals("Name")) {
+                                            classInfo.setProfessorName((String) s.getValue());
+                                            classAdapter.add(classInfo);
+                                            classAdapter.notifyDataSetChanged();
+                                        }
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
+                    }
             }
 
             @Override

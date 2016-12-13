@@ -104,15 +104,17 @@ public class AddClassActivity extends AppCompatActivity {
                                     fbProfessor.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-                                            Iterator i = dataSnapshot.getChildren().iterator();
+                                            if(dataSnapshot.exists()) {
+                                                Iterator i = dataSnapshot.getChildren().iterator();
 
-                                            while (i.hasNext()) {
-                                                DataSnapshot s = (DataSnapshot) i.next();
+                                                while (i.hasNext()) {
+                                                    DataSnapshot s = (DataSnapshot) i.next();
 
-                                                if (s.getKey().equals("Name")) {
-                                                    classInfo.setProfessorName((String) s.getValue());
-                                                    listAdapter.notifyDataSetChanged();
-                                                    return;
+                                                    if (s.getKey().equals("Name")) {
+                                                        classInfo.setProfessorName((String) s.getValue());
+                                                        listAdapter.notifyDataSetChanged();
+                                                        return;
+                                                    }
                                                 }
                                             }
                                         }

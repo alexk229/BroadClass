@@ -106,11 +106,13 @@ public class ContactFragment extends Fragment {
         fbContactProfile.child("Name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                newContact.setName((String) dataSnapshot.getValue());
+                if(dataSnapshot.exists()) {
+                    newContact.setName((String) dataSnapshot.getValue());
 
-                contactList.add(newContact);
-                contactNameAdapter.add(newContact.getName());
-                contactNameAdapter.notifyDataSetChanged();
+                    contactList.add(newContact);
+                    contactNameAdapter.add(newContact.getName());
+                    contactNameAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override

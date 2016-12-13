@@ -92,7 +92,9 @@ public class UserProfileActivity extends AppCompatActivity {
         root.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                userBio.setText(dataSnapshot.getValue().toString());
+                if(dataSnapshot.exists()) {
+                    userBio.setText(dataSnapshot.getValue().toString());
+                }
             }
 
             @Override
