@@ -2,10 +2,6 @@ package com.group4.cmpe131.broadclass.model;
 
 import java.io.Serializable;
 
-/**
- * Created by KYOTO on 12/11/2016.
- */
-
 public class Message implements Serializable {
     String id, message, createdAt;
     User user;

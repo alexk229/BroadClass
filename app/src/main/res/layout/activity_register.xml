@@ -28,7 +28,12 @@
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="30dp"
+<<<<<<< HEAD
+            android:src="@mipmap/ic_launcher"
+            android:id="@+id/imageView" />
+=======
             android:src="@drawable/logo_final" />
+>>>>>>> 2c8d3950cf94cd43a519f6ec1dfec28e6059d49a
 
         <TextView
             android:layout_width="match_parent"

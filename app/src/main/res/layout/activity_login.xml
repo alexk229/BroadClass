@@ -28,12 +28,20 @@
             android:textAlignment="center"/>
 
         <ImageView
+<<<<<<< HEAD
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="30dp"
+            android:src="@mipmap/ic_launcher" />
+=======
             android:layout_width="200dp"
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="30dp"
             android:src="@drawable/logo_final"
             android:layout_weight="0.55" />
+>>>>>>> 2c8d3950cf94cd43a519f6ec1dfec28e6059d49a
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
