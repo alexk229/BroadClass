@@ -83,7 +83,6 @@ public class ContactFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getActivity(), ConversationActivity.class);
                 i.putExtra(ConversationActivity.CHAT_ID, contactList.get(position).getChatKey());
-                i.putExtra(ConversationActivity.USERNAME, contactList.get(position).getName());
                 i.putExtra(Intent.EXTRA_TITLE, contactList.get(position).getName());
                 startActivity(i);
             }
@@ -100,7 +99,7 @@ public class ContactFragment extends Fragment {
         String contactID = dataSnapshot.getKey();
         newContact.setUID(contactID);
 
-        newContact.setChatKey((String) dataSnapshot.child("Chat_Key").getValue());
+        newContact.setChatKey((String) dataSnapshot.getValue());
 
         DatabaseReference fbContactProfile = fbRoot.child("Profiles").child(contactID);
 

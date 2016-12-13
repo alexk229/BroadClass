@@ -14,7 +14,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <ScrollView
+    <!-- <ScrollView
         android:id="@+id/conversation_scroller"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -31,7 +31,13 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true" />
         </LinearLayout>
-    </ScrollView>
+    </ScrollView> -->
+    <ListView
+        android:id="@+id/message_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </ListView>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -43,15 +49,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/edit_message"/>
-        <ImageButton
-            android:id="@+id/send_image_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:layout_marginRight="7dp"
-            android:src="@android:drawable/ic_menu_camera"
-            android:onClick="sendImage"
-            style="?android:attr/borderlessButtonStyle"/>
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/send_msg_button"
             android:layout_width="56dp"
