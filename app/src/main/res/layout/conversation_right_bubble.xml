@@ -31,6 +31,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/bubble_field_margin"
             android:textSize="12sp"
-            android:textColor="@color/bodyTextColor" />
+            android:textColor="@color/bodyTextColor"
+            android:gravity="right"
+            android:textAlignment="gravity"/>
     </LinearLayout>
 </LinearLayout>

@@ -25,6 +25,7 @@ import com.group4.cmpe131.broadclass.adapter.BCMessageAdapter;
 import com.group4.cmpe131.broadclass.util.BCContact;
 import com.group4.cmpe131.broadclass.util.BCMessage;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -159,7 +160,11 @@ public class ConversationActivity extends AppCompatActivity {
                 BCMessage m = new BCMessage();
                 m.setUID((String) dataSnapshot.child("UID").getValue());
                 m.setContent((String) dataSnapshot.child("Content").getValue());
-                m.setTimestamp((long) dataSnapshot.child("Timestamp").getValue());
+                try {
+                    m.setTimestamp((long) dataSnapshot.child("Timestamp").getValue());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
 
                 //Get name.
                 for (int i = 0; i < chatMemebers.size(); i++) {
