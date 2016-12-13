@@ -28,12 +28,8 @@
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="30dp"
-<<<<<<< HEAD
             android:src="@mipmap/ic_launcher"
             android:id="@+id/RegisterLogo" />
-=======
-            android:src="@drawable/logo_final" />
->>>>>>> de2c53aa7f1440d671d51bb53d2d4b463628cadf
 
         <TextView
             android:layout_width="match_parent"

@@ -93,6 +93,7 @@ public class ConversationActivity extends AppCompatActivity {
 
         //Get user information.
         fbMemberList.addChildEventListener(new ChildEventListener() {
+
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 BCContact newMember = new BCContact();
@@ -109,7 +110,7 @@ public class ConversationActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //Update name in member list.
                         for (int i = 0; i < chatMemebers.size(); i++) {
-                            if(chatMemebers.get(i).getUID().equals(uid)) {
+                            if (chatMemebers.get(i).getUID().equals(uid)) {
                                 chatMemebers.get(i).setName((String) dataSnapshot.getValue());
                                 break;
                             }
@@ -117,7 +118,7 @@ public class ConversationActivity extends AppCompatActivity {
 
                         //Update name in messages.
                         for (int i = 0; i < messageListAdapter.getCount(); i++) {
-                            if(messageListAdapter.getItem(i).getUID().equals(uid)) {
+                            if (messageListAdapter.getItem(i).getUID().equals(uid)) {
                                 messageListAdapter.getItem(i).setName((String) dataSnapshot.getValue());
                             }
                         }
@@ -126,22 +127,30 @@ public class ConversationActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {}
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
                 });
             }
 
-<<<<<<< HEAD
-        sendImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                launchCamera();
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
             }
-=======
-            @Override public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-            @Override public void onChildRemoved(DataSnapshot dataSnapshot) {}
-            @Override public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-            @Override public void onCancelled(DatabaseError databaseError) {}
->>>>>>> de2c53aa7f1440d671d51bb53d2d4b463628cadf
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
         });
 
         //Set up message handler.
@@ -190,6 +199,7 @@ public class ConversationActivity extends AppCompatActivity {
             }
         });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
