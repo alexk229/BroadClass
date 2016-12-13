@@ -10,6 +10,7 @@
         android:title="Manage Class"
         android:orderInCategory="102"
         android:id="@+id/action_manage_class" />
+
     <item android:title="@string/action_settings"
         android:id="@+id/action_settings"
         android:orderInCategory="103"

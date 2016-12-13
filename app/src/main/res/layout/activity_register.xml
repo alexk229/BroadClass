@@ -28,7 +28,8 @@
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="30dp"
-            android:src="@drawable/logo_final" />
+            android:src="@mipmap/ic_launcher"
+            android:id="@+id/RegisterLogo" />
 
         <TextView
             android:layout_width="match_parent"
