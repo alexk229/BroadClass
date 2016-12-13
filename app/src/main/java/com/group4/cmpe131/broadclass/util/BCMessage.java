@@ -1,5 +1,6 @@
 package com.group4.cmpe131.broadclass.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,11 +16,12 @@ public class BCMessage implements Comparable {
         return Timestamp;
     }
 
-    public void setTimestamp(Long timestamp) {
+    public void setTimestamp(Long timestamp) throws ParseException {
         Timestamp = timestamp;
 
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-        TimestampString = format.format(new Date(timestamp));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
+        TimestampString = dateFormat.format(new Date(timestamp));
+
     }
 
     public long getID() {
