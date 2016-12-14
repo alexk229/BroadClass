@@ -159,4 +159,12 @@
     <!-- List students in class -->
     <string name="button_label_add">Add</string>
     <string name="button_label_deny">Deny</string>
+
+    <!-- List groups in class -->
+    <string name="button_label_remove">Remove</string>
+    <!-- <string name="button_label_yes">Yes</string>
+    <string name="button_label_no">No</string> -->
+
+    <!-- Add group -->
+    <string name="group_title_hint">Group Title</string>
 </resources>

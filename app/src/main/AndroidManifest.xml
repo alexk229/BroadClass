@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
+        android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -85,12 +86,14 @@
         </service>
         <!-- ./Firebase Notifications -->
         <activity android:name=".activity.GroupInfoActivity" />
-        <activity android:name=".activity.ListStudentsActivity"
+        <activity
+            android:name=".activity.ListStudentsActivity"
             android:parentActivityName=".activity.ClassDetailActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.ClassDetailActivity" />
         </activity>
+        <activity android:name=".activity.ListGroupsActivity"></activity>
     </application>
 
 </manifest>

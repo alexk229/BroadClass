@@ -73,6 +73,8 @@ public class ClassDetailActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        Intent i;
+
         switch(id) {
             //Settings menu
             case R.id.action_settings:
@@ -81,7 +83,7 @@ public class ClassDetailActivity extends AppCompatActivity {
 
             //Student list
             case R.id.action_class_students:
-                Intent i = new Intent(this, ListStudentsActivity.class);
+                i = new Intent(this, ListStudentsActivity.class);
                 i.putExtra(ClassFragment.CID, classInfo.getClassID());
                 i.putExtra(ClassFragment.PID, classInfo.getProfessorID());
                 i.putExtra(ClassFragment.CNAME, classInfo.getClassName());
@@ -91,7 +93,12 @@ public class ClassDetailActivity extends AppCompatActivity {
 
             //Class groups
             case R.id.action_class_groups:
-                //TODO: Group management activity
+                i = new Intent(this, ListGroupsActivity.class);
+                i.putExtra(ClassFragment.CID, classInfo.getClassID());
+                i.putExtra(ClassFragment.PID, classInfo.getProfessorID());
+                i.putExtra(ClassFragment.CNAME, classInfo.getClassName());
+                i.putExtra(ClassFragment.PNAME, classInfo.getProfessorName());
+                startActivity(i);
                 return true;
         }
 

@@ -66,7 +66,7 @@ public class ListStudentsActivity extends AppCompatActivity {
         listStudentsToolbar.setTitle("Students");
         listStudentsToolbar.setSubtitle(classInfo.getClassName());
 
-        studentList = new BCStudentAdapter(this, classInfo.getClassID());
+        studentList = new BCStudentAdapter(this, classInfo);
 
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
         fbRoot = FirebaseDatabase.getInstance().getReference().getRoot();
