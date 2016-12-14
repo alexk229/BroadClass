@@ -198,9 +198,6 @@ public class ConversationActivity extends AppCompatActivity {
 
                     @Override public void onCancelled(DatabaseError databaseError) {}
                 });
-                /*Intent i = new Intent(ConversationActivity.this, GroupInfoActivity.class);
-                i.putExtra(ClassFragment.CID, )
-                startActivity(i);*/
                 break;
         }
 
@@ -230,10 +227,6 @@ public class ConversationActivity extends AppCompatActivity {
         userMsgMap.put("Timestamp", ServerValue.TIMESTAMP);
 
         fbNewMessage.updateChildren(userMsgMap);
-    }
-
-    private void showMembers(View view) {
-        //TODO: Show conversation members.
     }
 
     private void initUserAndMessageHandlers() {

@@ -234,8 +234,31 @@ public class GroupInfoActivity extends AppCompatActivity {
 
         membersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //TODO: Launch chat.
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                //Read chat ID from contacts.
+                fbRoot.child("Profiles").child(fbUser.getUid()).child("Contacts")
+                        .child(memberList.getItem(position).getUID())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Intent i = new Intent(activityContext, ConversationActivity.class);
+
+                        i.putExtra(Intent.EXTRA_TITLE, memberList.getItem(position).getName());
+
+                        if(dataSnapshot.exists()) {
+                            String chatId = (String) dataSnapshot.getValue();
+                            i.putExtra(ConversationActivity.CHAT_ID, chatId);
+                        }
+
+                        else {
+                            i.putExtra(ConversationActivity.RECIPIENT_USER_ID, memberList.getItem(position).getUID());
+                        }
+
+                        startActivity(i);
+                    }
+
+                    @Override public void onCancelled(DatabaseError databaseError) {}
+                });
             }
         });
     }

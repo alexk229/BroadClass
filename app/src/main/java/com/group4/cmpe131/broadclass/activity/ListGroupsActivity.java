@@ -126,21 +126,27 @@ public class ListGroupsActivity extends AppCompatActivity {
                             //Create the new group.
                             //Procedure:
                             //  Create chat.
+                            //  Add Professor to chat/group members.
                             //  Save chat key.
                             //  Create group.
                             //  Add group to class group list.
+                            //  Add group to profesor's group list.
                             String groupName = groupTitleText.getText().toString();
 
                             DatabaseReference groupChat = fbRoot.child("Chats").push();
                             DatabaseReference group = fbRoot.child("Groups").push();
 
                             groupChat.child("Group").setValue(group.getKey());
+                            groupChat.child("Users").child(fbUser.getUid()).setValue(true);
 
                             group.child("Chat_Key").setValue(groupChat.getKey());
                             group.child("Name").setValue(groupName);
                             group.child("Class").setValue(classInfo.getClassID());
+                            group.child("Users").child(fbUser.getUid()).setValue(true);
 
                             fbClassGroupList.child(group.getKey()).setValue(true);
+
+                            fbRoot.child("Profiles").child(fbUser.getUid()).child("Groups").child(group.getKey()).setValue(true);
                         }
                     });
 
