@@ -1,5 +1,6 @@
 package com.group4.cmpe131.broadclass.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -22,12 +23,15 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.adapter.BCMessageAdapter;
+import com.group4.cmpe131.broadclass.fragment.ClassFragment;
+import com.group4.cmpe131.broadclass.util.BCClassInfo;
 import com.group4.cmpe131.broadclass.util.BCContact;
 import com.group4.cmpe131.broadclass.util.BCMessage;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +49,7 @@ public class ConversationActivity extends AppCompatActivity {
 
     //Chat metadata.
     private String chatId;
+    private String groupId;
     private String recipientUID;
     private String chatroomTitle;
     private List<BCContact> chatMemebers = new ArrayList<BCContact>();
@@ -61,10 +66,14 @@ public class ConversationActivity extends AppCompatActivity {
     //Layout variables.
     private ListView messageListView;
 
+    private Context activityContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
+
+        activityContext = this;
 
         Toolbar conversationToolbar = (Toolbar) findViewById(R.id.conversation_toolbar);
         setSupportActionBar(conversationToolbar);
@@ -114,9 +123,20 @@ public class ConversationActivity extends AppCompatActivity {
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_conversation, menu);
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        //Check if the conversation is associated with a group. Inflate the menu if it is.
+        fbRoot.child("Chats").child(chatId).child("Group").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    groupId = (String) dataSnapshot.getValue();
+                    getMenuInflater().inflate(R.menu.menu_conversation, menu);
+                }
+            }
+
+            @Override public void onCancelled(DatabaseError databaseError) {}
+        });
+
         return true;
     }
 
@@ -128,9 +148,59 @@ public class ConversationActivity extends AppCompatActivity {
                 break;
 
             case R.id.action_group_info:
-                Intent intent = new Intent(ConversationActivity.this, GroupInfoActivity.class);
-                intent.putExtra(Intent.EXTRA_TITLE, chatroomTitle);
-                startActivity(intent);
+                //Read class information.
+                final BCClassInfo c = new BCClassInfo();
+
+                fbRoot.child("Groups").child(groupId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()) {
+                            final String groupName = (String) dataSnapshot.child("Name").getValue();
+                            c.setClassID((String) dataSnapshot.child("Class").getValue());
+
+                            fbRoot.child("Classes").child(c.getClassID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if(dataSnapshot.exists()) {
+                                        Iterator i = dataSnapshot.getChildren().iterator();
+
+                                        while(i.hasNext()) {
+                                            DataSnapshot s = (DataSnapshot) i.next();
+
+                                            if(s.getKey().equals("Name")) {
+                                                c.setClassName((String) s.getValue());
+                                            }
+
+                                            else if(s.getKey().equals("Professor")) {
+                                                c.setProfessorID((String) s.getValue());
+                                            }
+                                        }
+
+                                        //GroupInfoActivity doesn't need Professor name.
+                                        c.setProfessorName(null);
+
+                                        Intent intent = new Intent(activityContext, GroupInfoActivity.class);
+                                        intent.putExtra(ClassFragment.CID, c.getClassID());
+                                        intent.putExtra(ClassFragment.PID, c.getProfessorID());
+                                        intent.putExtra(ClassFragment.CNAME, c.getClassName());
+                                        intent.putExtra(ClassFragment.PNAME, c.getProfessorName());
+                                        intent.putExtra(GroupInfoActivity.GROUP_ID, groupId);
+                                        intent.putExtra(GroupInfoActivity.GROUP_NAME, groupName);
+                                        startActivity(intent);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {}
+                            });
+                        }
+                    }
+
+                    @Override public void onCancelled(DatabaseError databaseError) {}
+                });
+                /*Intent i = new Intent(ConversationActivity.this, GroupInfoActivity.class);
+                i.putExtra(ClassFragment.CID, )
+                startActivity(i);*/
                 break;
         }
 
