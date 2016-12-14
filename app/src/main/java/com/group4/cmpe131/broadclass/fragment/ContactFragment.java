@@ -35,8 +35,6 @@ public class ContactFragment extends Fragment {
     private ArrayAdapter<String> contactNameAdapter;
     private ListView contactListView;
 
-    private FloatingActionButton addContactButton;
-
     public ContactFragment() {
         // Required empty public constructor
     }
