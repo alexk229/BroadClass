@@ -144,7 +144,11 @@ public class BCStudentAdapter extends BaseAdapter{
 
         else {
             //Create view for group management list.
-            if (FirebaseAuth.getInstance().getCurrentUser().getUid().equals(mClassInfo.getProfessorID())) {
+
+            //Show the Professor view if this user is the Professor. The Professor should not be able
+            //to remove themselves from the group.
+            if (FirebaseAuth.getInstance().getCurrentUser().getUid().equals(mClassInfo.getProfessorID())
+                    && mClassInfo.getProfessorID().equals(mList.get(position).getUID()) == false) {
                 //Professor view
                 view = i.inflate(R.layout.professor_group_list_item, parent, false);
 
@@ -175,15 +179,18 @@ public class BCStudentAdapter extends BaseAdapter{
                         dialogBuilder.show();
                     }
                 });
+
+                //Fill in the student's name.
+                ((TextView) view.findViewById(R.id.group_list_item_name)).setText(mList.get(position).getName());
             }
 
             else {
                 //Student view
                 view = i.inflate(R.layout.student_list_item, parent, false);
-            }
 
-            //Fill in the student's name.
-            ((TextView) view.findViewById(R.id.group_list_item_name)).setText(mList.get(position).getName());
+                //Fill in the student's name.
+                ((TextView) view.findViewById(R.id.student_list_item_name)).setText(mList.get(position).getName());
+            }
         }
 
         return view;
