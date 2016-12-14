@@ -155,4 +155,8 @@
     <!-- String related to conversation activity -->
     <string name="action_group_info">Group info</string>
     <string name="title_activity_group_info">GroupInfoActivity</string>
+
+    <!-- List students in class -->
+    <string name="button_label_add">Add</string>
+    <string name="button_label_deny">Deny</string>
 </resources>

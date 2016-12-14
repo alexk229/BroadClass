@@ -12,17 +12,12 @@ import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.fragment.ClassFragment;
+import com.group4.cmpe131.broadclass.util.BCClassInfo;
 
 public class ClassDetailActivity extends AppCompatActivity {
-
-
-    private String classID;
-    private String className;
-    private String professorID;
-    private String professorName;
+    private BCClassInfo classInfo;
 
     private MenuInflater inflater;
 
@@ -51,23 +46,25 @@ public class ClassDetailActivity extends AppCompatActivity {
         classDetailAb.setDisplayHomeAsUpEnabled(true);
         classDetailAb.setDisplayShowTitleEnabled(false);
 
+        classInfo = new BCClassInfo();
+
         Intent intent = getIntent();
-        classID = intent.getStringExtra(ClassFragment.CID);
-        className = intent.getStringExtra(ClassFragment.CNAME);
-        professorID = intent.getStringExtra(ClassFragment.PID);
-        professorName = intent.getStringExtra(ClassFragment.PNAME);
 
-        classDetailToolbar.setTitle(className);
-        classDetailToolbar.setSubtitle(professorName);
+        classInfo.setClassID(intent.getStringExtra(ClassFragment.CID));
+        classInfo.setProfessorID(intent.getStringExtra(ClassFragment.PID));
+        classInfo.setClassName(intent.getStringExtra(ClassFragment.CNAME));
+        classInfo.setProfessorName(intent.getStringExtra(ClassFragment.PNAME));
 
+        classDetailToolbar.setTitle(classInfo.getClassName());
+        classDetailToolbar.setSubtitle(classInfo.getProfessorName());
     }
 
-        public boolean onCreateOptionsMenu(Menu menu) {
-            // Inflate the menu; this adds items to the action bar if it is present.
-            getMenuInflater().inflate(R.menu.menu_class_detail, menu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_class_detail, menu);
 
-            return true;
-        }
+        return true;
+    }
 
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -76,29 +73,28 @@ public class ClassDetailActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(ClassDetailActivity.this, SettingsActivity.class));
-            return true;
-        }
-
-        if (id == R.id.action_manage_class) {
-            if (user.getUid().equals(professorID)) {
-                //TODO: add in the manage class activity
+        switch(id) {
+            //Settings menu
+            case R.id.action_settings:
+                startActivity(new Intent(ClassDetailActivity.this, SettingsActivity.class));
                 return true;
-            }
+
+            //Student list
+            case R.id.action_class_students:
+                Intent i = new Intent(this, ListStudentsActivity.class);
+                i.putExtra(ClassFragment.CID, classInfo.getClassID());
+                i.putExtra(ClassFragment.PID, classInfo.getProfessorID());
+                i.putExtra(ClassFragment.CNAME, classInfo.getClassName());
+                i.putExtra(ClassFragment.PNAME, classInfo.getProfessorName());
+                startActivity(i);
+                return true;
+
+            //Class groups
+            case R.id.action_class_groups:
+                //TODO: Group management activity
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
-
-        /*
-        if current user ID matches Prof ID enable class management features in toolbar/settings
-        need an adapter to construct the list
-
-        request server to provide members list via ClassID
-
-         */
-
 }

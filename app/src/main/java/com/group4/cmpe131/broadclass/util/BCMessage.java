@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class BCMessage implements Comparable {
-    private Long   ID;
+    private long   ID;
     private String UID;
     private String Name;
     private String Content;

@@ -84,7 +84,13 @@
             </intent-filter>
         </service>
         <!-- ./Firebase Notifications -->
-        <activity android:name=".activity.GroupInfoActivity"></activity>
+        <activity android:name=".activity.GroupInfoActivity" />
+        <activity android:name=".activity.ListStudentsActivity"
+            android:parentActivityName=".activity.ClassDetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ClassDetailActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
-        android:title="Classroom List"
+        android:title="Students"
         android:orderInCategory="101"
-        android:id="@+id/action_class_info" />
+        android:id="@+id/action_class_students" />
     <item
-        android:title="Manage Class"
+        android:title="Groups"
         android:orderInCategory="102"
-        android:id="@+id/action_manage_class" />
-
+        android:id="@+id/action_class_groups" />
     <item android:title="@string/action_settings"
         android:id="@+id/action_settings"
         android:orderInCategory="103"
