@@ -167,4 +167,8 @@
 
     <!-- Add group -->
     <string name="group_title_hint">Group Title</string>
+
+    <!-- Make announcement -->
+    <string name="announcement_subject_hint">Subject</string>
+    <string name="announcement_content_hint">Content</string>
 </resources>
