@@ -35,6 +35,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ConversationActivity extends AppCompatActivity {
     final public static String CHAT_ID = "CHAT_ID";
+    final public static String RECIPIENT_USER_ID = "USER_ID";
 
     //Firebase variables and references.
     private FirebaseUser fbUser;
@@ -44,6 +45,7 @@ public class ConversationActivity extends AppCompatActivity {
 
     //Chat metadata.
     private String chatId;
+    private String recipientUID;
     private String chatroomTitle;
     private List<BCContact> chatMemebers = new ArrayList<BCContact>();
 
@@ -74,6 +76,7 @@ public class ConversationActivity extends AppCompatActivity {
 
         chatroomTitle = getIntent().getStringExtra(Intent.EXTRA_TITLE);
         chatId = getIntent().getStringExtra(CHAT_ID);
+        recipientUID = getIntent().getStringExtra(RECIPIENT_USER_ID);
 
         conversationToolbar.setTitle(chatroomTitle);
 
@@ -83,11 +86,90 @@ public class ConversationActivity extends AppCompatActivity {
         //Set up Firebase stuff.
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
         fbRoot = FirebaseDatabase.getInstance().getReference().getRoot();
-        fbMessageList = fbRoot.child("Chats").child(chatId).child("Messages");
-        fbMemberList = fbRoot.child("Chats").child(chatId).child("Users");
 
         //Init message adapter.
         messageListAdapter = new BCMessageAdapter(this, fbUser);
+
+        //Save layout variables.
+        messageListView = (ListView) findViewById(R.id.message_list);
+
+        if(chatId != null) {
+            initUserAndMessageHandlers();
+        }
+
+        //TODO: Fix this.
+        //conversationFooter.requestFocus();
+
+        userMsgMap = new HashMap<String, Object>();
+
+        //Sets send message button action
+        sendMsgButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage();
+                inputMsgText.setText(null);
+            }
+        });
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_conversation, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem i) {
+        switch(i.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+
+            case R.id.action_group_info:
+                Intent intent = new Intent(ConversationActivity.this, GroupInfoActivity.class);
+                intent.putExtra(Intent.EXTRA_TITLE, chatroomTitle);
+                startActivity(intent);
+                break;
+        }
+
+        return true;
+    }
+
+    /* Sends a message. */
+    private void sendMessage() {
+        if(chatId == null) {
+            //Create new chat.
+            DatabaseReference chatRoot = fbRoot.child("Chats").push();
+            chatId = chatRoot.getKey();
+            chatRoot.child("Users").child(fbUser.getUid()).setValue(true);
+            chatRoot.child("Users").child(recipientUID).setValue(true);
+
+            //Add user's to each other's contacts.
+            fbRoot.child("Profiles").child(recipientUID).child("Contacts").child(fbUser.getUid()).setValue(chatId);
+            fbRoot.child("Profiles").child(fbUser.getUid()).child("Contacts").child(recipientUID).setValue(chatId);
+
+            initUserAndMessageHandlers();
+        }
+
+        DatabaseReference fbNewMessage = fbMessageList.push();
+
+        userMsgMap.put("UID", fbUser.getUid());
+        userMsgMap.put("Content", inputMsgText.getText().toString());
+        userMsgMap.put("Timestamp", ServerValue.TIMESTAMP);
+
+        fbNewMessage.updateChildren(userMsgMap);
+    }
+
+    private void showMembers(View view) {
+        //TODO: Show conversation members.
+    }
+
+    private void initUserAndMessageHandlers() {
+        //Save database locations.
+        fbMessageList = fbRoot.child("Chats").child(chatId).child("Messages");
+        fbMemberList = fbRoot.child("Chats").child(chatId).child("Users");
 
         //Get user information.
         fbMemberList.addChildEventListener(new ChildEventListener() {
@@ -132,25 +214,10 @@ public class ConversationActivity extends AppCompatActivity {
                 });
             }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            @Override public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+            @Override public void onChildRemoved(DataSnapshot dataSnapshot) {}
+            @Override public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+            @Override public void onCancelled(DatabaseError databaseError) {}
         });
 
         //Set up message handler.
@@ -184,63 +251,7 @@ public class ConversationActivity extends AppCompatActivity {
             @Override public void onCancelled(DatabaseError databaseError) {}
         });
 
-        //Save layout variables.
-        messageListView = (ListView) findViewById(R.id.message_list);
         messageListView.setAdapter(messageListAdapter);
         messageListView.setDivider(null);
-
-        //TODO: Fix this.
-        //conversationFooter.requestFocus();
-
-        userMsgMap = new HashMap<String, Object>();
-
-        //Sets send message button action
-        sendMsgButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessage();
-                inputMsgText.setText(null);
-            }
-        });
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_conversation, menu);
-        return true;
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.action_group_info) {
-            Intent intent = new Intent(ConversationActivity.this, GroupInfoActivity.class);
-            intent.putExtra(Intent.EXTRA_TITLE, chatroomTitle);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    /* Sends a message. */
-    private void sendMessage() {
-        Map<String, Object> keyMap = new HashMap<String, Object>();
-        DatabaseReference fbNewMessage = fbMessageList.push();
-
-        userMsgMap.put("UID", fbUser.getUid());
-        userMsgMap.put("Content", inputMsgText.getText().toString());
-        userMsgMap.put("Timestamp", ServerValue.TIMESTAMP);
-
-        fbNewMessage.updateChildren(userMsgMap);
-    }
-
-    private void showMembers(View view) {
-        //TODO: Show conversation members.
     }
 }

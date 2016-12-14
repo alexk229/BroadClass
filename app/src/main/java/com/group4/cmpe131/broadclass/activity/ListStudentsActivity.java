@@ -1,12 +1,14 @@
 package com.group4.cmpe131.broadclass.activity;
 
+import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,6 +25,8 @@ import com.group4.cmpe131.broadclass.fragment.ClassFragment;
 import com.group4.cmpe131.broadclass.util.BCClassInfo;
 import com.group4.cmpe131.broadclass.util.BCStudentInfo;
 
+import java.util.Iterator;
+
 public class ListStudentsActivity extends AppCompatActivity {
     private BCClassInfo classInfo;
 
@@ -35,10 +39,13 @@ public class ListStudentsActivity extends AppCompatActivity {
 
     private ListView studentListView;
 
+    private Context activityContext;    //For starting a conversation via Intent.
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_students);
+        activityContext = this;
 
         classInfo = new BCClassInfo();
 
@@ -151,6 +158,40 @@ public class ListStudentsActivity extends AppCompatActivity {
 
         studentListView = (ListView) findViewById(R.id.list_students_lv);
         studentListView.setAdapter(studentList);
+
+        studentListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                final String studentUID = studentList.getItem(position).getUID();
+
+                //Search for student in user's contacts.
+                fbRoot.child("Profiles").child(fbUser.getUid()).child("Contacts").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Intent intent = new Intent(activityContext, ConversationActivity.class);
+                        intent.putExtra(Intent.EXTRA_TITLE, studentList.getItem(position).getName());
+                        intent.putExtra(ConversationActivity.RECIPIENT_USER_ID, studentList.getItem(position).getUID());
+
+                        if(dataSnapshot.exists()) {
+                            Iterator i = dataSnapshot.getChildren().iterator();
+
+                            while (i.hasNext()) {
+                                DataSnapshot s = (DataSnapshot) i.next();
+
+                                if (s.getKey().equals(studentUID)) {
+                                    intent.putExtra(ConversationActivity.CHAT_ID, (String) s.getValue());
+                                    break;
+                                }
+                            }
+                        }
+
+                        startActivity(intent);
+                    }
+
+                    @Override public void onCancelled(DatabaseError databaseError) {}
+                });
+            }
+        });
     }
 
     @Override
@@ -159,10 +200,7 @@ public class ListStudentsActivity extends AppCompatActivity {
             case android.R.id.home:
                 //This prevents the class detail activity from restarting and appearing blank
                 //upon hitting the Up button.
-                Intent intent = NavUtils.getParentActivityIntent(this);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                NavUtils.navigateUpTo(this, intent);
-                return true;
+                finish();
         }
 
         return true;
