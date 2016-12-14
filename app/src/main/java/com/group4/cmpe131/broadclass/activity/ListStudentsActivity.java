@@ -1,10 +1,12 @@
 package com.group4.cmpe131.broadclass.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +27,9 @@ import com.group4.cmpe131.broadclass.fragment.ClassFragment;
 import com.group4.cmpe131.broadclass.util.BCClassInfo;
 import com.group4.cmpe131.broadclass.util.BCStudentInfo;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class ListStudentsActivity extends AppCompatActivity {
     private BCClassInfo classInfo;
@@ -165,33 +169,66 @@ public class ListStudentsActivity extends AppCompatActivity {
                 final String studentUID = studentList.getItem(position).getUID();
 
                 //Search for student in user's contacts.
-                fbRoot.child("Profiles").child(fbUser.getUid()).child("Contacts").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Intent intent = new Intent(activityContext, ConversationActivity.class);
-                        intent.putExtra(Intent.EXTRA_TITLE, studentList.getItem(position).getName());
-                        intent.putExtra(ConversationActivity.RECIPIENT_USER_ID, studentList.getItem(position).getUID());
-
-                        if(dataSnapshot.exists()) {
-                            Iterator i = dataSnapshot.getChildren().iterator();
-
-                            while (i.hasNext()) {
-                                DataSnapshot s = (DataSnapshot) i.next();
-
-                                if (s.getKey().equals(studentUID)) {
-                                    intent.putExtra(ConversationActivity.CHAT_ID, (String) s.getValue());
-                                    break;
-                                }
-                            }
-                        }
-
-                        startActivity(intent);
-                    }
-
-                    @Override public void onCancelled(DatabaseError databaseError) {}
-                });
+                showDialogOptions(studentUID, position);
             }
         });
+    }
+
+
+    //Shows a options dialog when selecting a user
+    private void showDialogOptions(final String studentUID, final int position) {
+        List<String> mOptionsList = new ArrayList<String>();
+        mOptionsList.add("Message");
+        mOptionsList.add("View Profile");
+        final CharSequence[] mOptions = mOptionsList.toArray(new String[mOptionsList.size()]);
+
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setItems(mOptions, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i) {
+                    case 0:
+                        fbRoot.child("Profiles").child(fbUser.getUid()).child("Contacts").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Intent intent = new Intent(activityContext, ConversationActivity.class);
+                                intent.putExtra(Intent.EXTRA_TITLE, studentList.getItem(position).getName());
+                                intent.putExtra(ConversationActivity.RECIPIENT_USER_ID, studentList.getItem(position).getUID());
+
+                                if (dataSnapshot.exists()) {
+                                    Iterator i = dataSnapshot.getChildren().iterator();
+
+                                    while (i.hasNext()) {
+                                        DataSnapshot s = (DataSnapshot) i.next();
+
+                                        if (s.getKey().equals(studentUID)) {
+                                            intent.putExtra(ConversationActivity.CHAT_ID, (String) s.getValue());
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                        break;
+                    case 1:
+                        Intent intent = new Intent(activityContext, UserProfileActivity.class);
+                        intent.putExtra("UserID", studentUID);
+                        startActivity(intent);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        AlertDialog alertDialogObject = alertDialog.create();
+        alertDialogObject.show();
     }
 
     @Override

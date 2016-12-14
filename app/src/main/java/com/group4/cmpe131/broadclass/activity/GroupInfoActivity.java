@@ -236,31 +236,61 @@ public class GroupInfoActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 //Read chat ID from contacts.
-                fbRoot.child("Profiles").child(fbUser.getUid()).child("Contacts")
-                        .child(memberList.getItem(position).getUID())
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Intent i = new Intent(activityContext, ConversationActivity.class);
-
-                        i.putExtra(Intent.EXTRA_TITLE, memberList.getItem(position).getName());
-
-                        if(dataSnapshot.exists()) {
-                            String chatId = (String) dataSnapshot.getValue();
-                            i.putExtra(ConversationActivity.CHAT_ID, chatId);
-                        }
-
-                        else {
-                            i.putExtra(ConversationActivity.RECIPIENT_USER_ID, memberList.getItem(position).getUID());
-                        }
-
-                        startActivity(i);
-                    }
-
-                    @Override public void onCancelled(DatabaseError databaseError) {}
-                });
+                final String studentUID = memberList.getItem(position).getUID();
+                showDialogOptions(studentUID, position);
             }
         });
+    }
+
+    //Shows a options dialog when selecting a user
+    private void showDialogOptions(final String studentUID, final int position) {
+        List<String> mOptionsList = new ArrayList<String>();
+        mOptionsList.add("Message");
+        mOptionsList.add("View Profile");
+        final CharSequence[] mOptions = mOptionsList.toArray(new String[mOptionsList.size()]);
+
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setItems(mOptions, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i) {
+                    case 0:
+                        fbRoot.child("Profiles").child(fbUser.getUid()).child("Contacts")
+                                .child(memberList.getItem(position).getUID())
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        Intent i = new Intent(activityContext, ConversationActivity.class);
+
+                                        i.putExtra(Intent.EXTRA_TITLE, memberList.getItem(position).getName());
+
+                                        if(dataSnapshot.exists()) {
+                                            String chatId = (String) dataSnapshot.getValue();
+                                            i.putExtra(ConversationActivity.CHAT_ID, chatId);
+                                        }
+
+                                        else {
+                                            i.putExtra(ConversationActivity.RECIPIENT_USER_ID, studentUID);
+                                        }
+
+                                        startActivity(i);
+                                    }
+
+                                    @Override public void onCancelled(DatabaseError databaseError) {}
+                                });
+                        break;
+                    case 1:
+                        Intent intent = new Intent(activityContext, UserProfileActivity.class);
+                        intent.putExtra("UserID", studentUID);
+                        startActivity(intent);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        AlertDialog alertDialogObject = alertDialog.create();
+        alertDialogObject.show();
     }
 
     @Override
@@ -271,5 +301,7 @@ public class GroupInfoActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
 }

@@ -20,6 +20,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -29,7 +30,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +42,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -55,18 +56,20 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserProfileActivity extends AppCompatActivity {
 
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser user;
     private CircleImageView mProfilePic;
     private Button updateBioButton;
     private EditText editUserBio;
     private TextView userBio;
     private FloatingActionButton cameraButton;
+    private Toolbar toolbar;
 
     //Database ref for user bio
-    private DatabaseReference root;
+    private DatabaseReference fbBio;
+    private DatabaseReference fbProfilePic;
+    private DatabaseReference fbDisplayName;
 
     private String mImageFileLocation;
+    private String mUserId;
     final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
 
     @Override
@@ -77,23 +80,58 @@ public class UserProfileActivity extends AppCompatActivity {
         mProfilePic = (CircleImageView) findViewById(R.id.profile_image);
         userBio = (TextView)findViewById(R.id.user_bio);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.user_profile_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.user_profile_toolbar);
+        cameraButton = (FloatingActionButton) findViewById(R.id.camera_fab);
+        updateBioButton = (Button) findViewById(R.id.update_bio_button);
+
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
-        cameraButton = (FloatingActionButton) findViewById(R.id.camera_fab);
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        user = firebaseAuth.getCurrentUser();
+        mUserId = getIntent().getStringExtra("UserID");
 
-        root = FirebaseDatabase.getInstance().getReference().getRoot()
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if(!mUserId.equals(currentUser.getUid())) {
+            cameraButton.setVisibility(View.INVISIBLE);
+            cameraButton.setEnabled(false);
+            updateBioButton.setVisibility(View.INVISIBLE);
+            updateBioButton.setEnabled(false);
+        } else {
+            cameraButton.setVisibility(View.VISIBLE);
+            cameraButton.setEnabled(true);
+            updateBioButton.setVisibility(View.VISIBLE);
+            updateBioButton.setEnabled(true);
+        }
+
+        fbDisplayName = FirebaseDatabase.getInstance().getReference().getRoot()
                 .child("Profiles")
-                .child(user.getUid())
+                .child(mUserId)
+                .child("Name");
+
+        fbDisplayName.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    toolbar.setTitle(dataSnapshot.getValue().toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        fbBio = FirebaseDatabase.getInstance().getReference().getRoot()
+                .child("Profiles")
+                .child(mUserId)
                 .child("Bio");
 
-        root.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        fbBio.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
@@ -107,19 +145,28 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
-        //Validates if user is logged in
-        if (user != null) {
-            toolbar.setTitle(user.getDisplayName().toString());
+        fbProfilePic = FirebaseDatabase.getInstance().getReference().getRoot()
+                .child("Profiles")
+                .child(mUserId)
+                .child("Profile picture");
 
-            //Attempts to get user profile picture
-            if(user.getPhotoUrl() != null) {
-                //If fails attempt to obtain profile picture from firebase url else use default profile pic
-                Glide.with(this.getApplicationContext())
-                        .load(user.getPhotoUrl().toString())
-                        .error(R.drawable.com_facebook_profile_picture_blank_portrait)
-                        .into(mProfilePic);
+        fbProfilePic.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    try {
+                        mProfilePic.setImageBitmap(decodeFromFirebaseBase64(dataSnapshot.getValue().toString()));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         //Sets camera floating action button
         cameraButton.setOnClickListener(new View.OnClickListener() {
@@ -133,8 +180,6 @@ public class UserProfileActivity extends AppCompatActivity {
             }
             });
 
-        updateBioButton = (Button) findViewById(R.id.update_bio_button);
-
         updateBioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -144,6 +189,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     }
 
+    //Checks for results of requested permissions
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
@@ -186,6 +232,7 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
+    //Check permissions to access camera and image files
     public void checkPermissions() throws IOException {
 
         List<String> permissionsNeeded = new ArrayList<String>();
@@ -261,7 +308,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void updateUserBio(String newBio) {
-        root.setValue(newBio);
+        fbBio.setValue(newBio);
         userBio.setText(newBio);
     }
 
@@ -300,6 +347,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
     }
 
+
+    //Create the captured image picture to a file
     private File createImageFile() throws IOException {
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -313,6 +362,7 @@ public class UserProfileActivity extends AppCompatActivity {
         return image;
     }
 
+    //Reduces byte size of image
     private Bitmap setReducedImageSize() {
         int targetImageViewWidth = mProfilePic.getWidth();
         int targetImageViewHeight = mProfilePic.getHeight();
@@ -331,6 +381,7 @@ public class UserProfileActivity extends AppCompatActivity {
         return BitmapFactory.decodeFile(mImageFileLocation, bmOptions);
     }
 
+    //Rotates image
     private void rotateImage(Bitmap bitmap) {
         ExifInterface exifInterface = null;
         try {
@@ -355,10 +406,25 @@ public class UserProfileActivity extends AppCompatActivity {
 
         Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
         mProfilePic.setImageBitmap(rotatedBitmap);
+
+        encodeBitmapAndSaveToFirebase(rotatedBitmap);
+    }
+
+    //Encodes the image FireBase
+    public void encodeBitmapAndSaveToFirebase(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        String imageEncoded = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+        fbProfilePic.setValue(imageEncoded);
+    }
+
+    //Decodes the image from FireBase
+    public static Bitmap decodeFromFirebaseBase64(String image) throws IOException {
+        byte[] decodedByteArray = android.util.Base64.decode(image, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
     }
 
     //Dialog to create classroom
-    //TODO: needs to send data to server
     private void requestBioDialog() {
         LayoutInflater layoutInflater = LayoutInflater.from(UserProfileActivity.this);
         View promptView = layoutInflater.inflate(R.layout.dialog_update_user_bio, null);

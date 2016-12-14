@@ -234,7 +234,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_user_profile) {
-            startActivity(new Intent(MainActivity.this, UserProfileActivity.class));
+            Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
+            intent.putExtra("UserID", user.getUid().toString());
+            startActivity(intent);
         } else if (id == R.id.nav_account_settings) {
             startActivity(new Intent(MainActivity.this, AccountSettingsActivity.class));
         } else if (id == R.id.nav_logout) {
