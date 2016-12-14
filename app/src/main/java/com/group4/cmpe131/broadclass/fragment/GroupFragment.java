@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.activity.ConversationActivity;
 
+import java.lang.reflect.GenericArrayType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.List;
 public class GroupFragment extends Fragment {
     private List<String> groupNameList = new ArrayList<String>();
     private ArrayAdapter<String> groupNameAdapter;
+    private List<String> groupChatKeyList = new ArrayList<String>();
 
     private FirebaseUser fbUser;
     private DatabaseReference fbRoot;
@@ -69,6 +71,10 @@ public class GroupFragment extends Fragment {
                                 if (s.getKey().equals("Name")) {
                                     groupNameAdapter.add((String) s.getValue());
                                     groupNameAdapter.notifyDataSetChanged();
+                                }
+
+                                else if(s.getKey().equals("Chat_Key")) {
+                                    groupChatKeyList.add((String) s.getValue());
                                 }
                             }
                         }
@@ -130,10 +136,10 @@ public class GroupFragment extends Fragment {
         groupList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), ConversationActivity.class);
-                intent.putExtra(Intent.EXTRA_TITLE, groupNameAdapter.getItem(position));
-                intent.putExtra("username", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-                startActivity(intent);
+                Intent i = new Intent(getActivity(), ConversationActivity.class);
+                i.putExtra(Intent.EXTRA_TITLE, groupNameList.get(position));
+                i.putExtra(ConversationActivity.CHAT_ID, groupChatKeyList.get(position));
+                startActivity(i);
             }
         });
 

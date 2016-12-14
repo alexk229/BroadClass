@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -171,6 +172,20 @@ public class ListGroupsActivity extends AppCompatActivity {
 
         groupListView = (ListView) findViewById(R.id.list_groups_lv);
         groupListView.setAdapter(groupList);
+
+        groupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(activityContext, GroupInfoActivity.class);
+                i.putExtra(ClassFragment.CID, classInfo.getClassID());
+                i.putExtra(ClassFragment.PID, classInfo.getProfessorID());
+                i.putExtra(ClassFragment.CNAME, classInfo.getClassName());
+                i.putExtra(ClassFragment.PNAME, classInfo.getProfessorName());
+                i.putExtra(GroupInfoActivity.GROUP_ID, groupList.getItem(position).getGID());
+                i.putExtra(GroupInfoActivity.GROUP_NAME, groupList.getItem(position).getName());
+                startActivity(i);
+            }
+        });
     }
 
     @Override

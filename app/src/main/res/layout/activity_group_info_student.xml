@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_group_info"
+    android:id="@+id/activity_list_groups"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.group4.cmpe131.broadclass.activity.GroupInfoActivity">
-
+    android:orientation="vertical">
     <android.support.v7.widget.Toolbar
         android:id="@+id/group_info_toolbar"
         android:layout_width="match_parent"
@@ -15,6 +12,12 @@
         android:background="#3169CB"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-</LinearLayout>
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+    </android.support.v7.widget.Toolbar>
+    <ListView
+        android:id="@+id/group_info_lv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/group_info_toolbar">
+    </ListView>
+</RelativeLayout>
