@@ -22,5 +22,4 @@ public class Config {
 
     public static boolean appendNotificationMessages = true;
 
-    public static int appTheme = 1;
 }

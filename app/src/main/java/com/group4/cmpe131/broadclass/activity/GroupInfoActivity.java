@@ -3,7 +3,9 @@ package com.group4.cmpe131.broadclass.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -24,7 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.adapter.BCStudentAdapter;
-import com.group4.cmpe131.broadclass.app.Config;
 import com.group4.cmpe131.broadclass.fragment.ClassFragment;
 import com.group4.cmpe131.broadclass.model.BCClassInfo;
 import com.group4.cmpe131.broadclass.model.BCGroupInfo;
@@ -56,11 +57,14 @@ public class GroupInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Config.appTheme == 1) {
+        SharedPreferences getData = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String themeValues = getData.getString("theme", "dark");
+
+        if (themeValues.equals("light")) {
             setTheme(R.style.AppTheme_Light);
         }
 
-        if (Config.appTheme == 2) {
+        if (themeValues.equals("dark")) {
             setTheme(R.style.AppTheme_Dark);
         }
 

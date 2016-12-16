@@ -1,6 +1,8 @@
 package com.group4.cmpe131.broadclass.activity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -14,7 +16,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.group4.cmpe131.broadclass.R;
-import com.group4.cmpe131.broadclass.app.Config;
 
 public class ResetPasswordActivity extends AppCompatActivity {
 
@@ -27,11 +28,14 @@ public class ResetPasswordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Config.appTheme == 1) {
+        SharedPreferences getData = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String themeValues = getData.getString("theme", "dark");
+
+        if (themeValues.equals("light")) {
             setTheme(R.style.AppTheme_Light);
         }
 
-        if (Config.appTheme == 2) {
+        if (themeValues.equals("dark")) {
             setTheme(R.style.AppTheme_Dark);
         }
 

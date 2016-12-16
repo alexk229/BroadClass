@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.group4.cmpe131.broadclass.R;
-import com.group4.cmpe131.broadclass.app.Config;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -49,11 +48,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         switch (theme) {
             case "dark":
                 setTheme(R.style.AppTheme_Dark);
-                Config.appTheme = 2;
                 break;
             case "light":
                 setTheme(R.style.AppTheme_Light);
-                Config.appTheme = 1;
                 break;
         }
 

@@ -3,6 +3,7 @@ package com.group4.cmpe131.broadclass.activity;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -41,7 +43,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
-import com.group4.cmpe131.broadclass.app.Config;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -78,11 +79,14 @@ public class UserProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Config.appTheme == 1) {
+        SharedPreferences getData = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String themeValues = getData.getString("theme", "dark");
+
+        if (themeValues.equals("light")) {
             setTheme(R.style.AppTheme_Light);
         }
 
-        if (Config.appTheme == 2) {
+        if (themeValues.equals("dark")) {
             setTheme(R.style.AppTheme_Dark);
         }
 

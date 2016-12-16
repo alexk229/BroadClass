@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -73,11 +74,14 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Config.appTheme == 1) {
+        SharedPreferences getData = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String themeValues = getData.getString("theme", "dark");
+
+        if (themeValues.equals("light")) {
             setTheme(R.style.AppTheme_Light);
         }
 
-        if (Config.appTheme == 2) {
+        if (themeValues.equals("dark")) {
             setTheme(R.style.AppTheme_Dark);
         }
 
