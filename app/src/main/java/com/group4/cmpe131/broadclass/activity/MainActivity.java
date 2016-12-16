@@ -73,6 +73,14 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (Config.appTheme == 1) {
+            setTheme(R.style.AppTheme_Light);
+        }
+
+        if (Config.appTheme == 2) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         fbAuth = FirebaseAuth.getInstance();
         user = fbAuth.getCurrentUser();
 

@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.group4.cmpe131.broadclass.R;
+import com.group4.cmpe131.broadclass.app.Config;
 
 public class AccountSettingsActivity extends AppCompatActivity {
 
@@ -32,6 +33,15 @@ public class AccountSettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Config.appTheme == 1) {
+            setTheme(R.style.AppTheme_Light);
+        }
+
+        if (Config.appTheme == 2) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         setContentView(R.layout.activity_account_settings);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);

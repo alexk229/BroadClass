@@ -21,4 +21,6 @@ public class Config {
     public static final int PUSH_TYPE_USER = 2;
 
     public static boolean appendNotificationMessages = true;
+
+    public static int appTheme = 1;
 }

@@ -24,6 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.adapter.ClassSearchResultListAdapter;
+import com.group4.cmpe131.broadclass.app.Config;
 import com.group4.cmpe131.broadclass.model.BCClassInfo;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
@@ -50,6 +51,15 @@ public class AddClassActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Config.appTheme == 1) {
+            setTheme(R.style.AppTheme_Light);
+        }
+
+        if (Config.appTheme == 2) {
+            setTheme(R.style.AppTheme_Dark);
+        }
+
         setContentView(R.layout.activity_add_class);
 
         Toolbar addClassToolbar = (Toolbar) findViewById(R.id.add_class_toolbar);

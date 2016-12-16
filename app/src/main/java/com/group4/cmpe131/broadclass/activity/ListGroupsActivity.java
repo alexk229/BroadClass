@@ -3,11 +3,11 @@ package com.group4.cmpe131.broadclass.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.adapter.BCGroupAdapter;
+import com.group4.cmpe131.broadclass.app.Config;
 import com.group4.cmpe131.broadclass.fragment.ClassFragment;
 import com.group4.cmpe131.broadclass.model.BCClassInfo;
 import com.group4.cmpe131.broadclass.model.BCGroupInfo;
@@ -47,6 +48,14 @@ public class ListGroupsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Config.appTheme == 1) {
+            setTheme(R.style.AppTheme_Light);
+        }
+
+        if (Config.appTheme == 2) {
+            setTheme(R.style.AppTheme_Dark);
+        }
 
         activityContext = this;
 

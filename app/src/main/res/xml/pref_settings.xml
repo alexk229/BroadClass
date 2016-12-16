@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:title="Sync Information"
+        android:key="sync_category">
+
+        <ListPreference
+            android:title="Theme"
+            android:key="@string/pref_theme"
+            android:summary="Change theme settings"
+            android:defaultValue="dark"
+            android:entries="@array/pref_theme_list_entries"
+            android:entryValues="@array/pref_theme_list_values" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -16,12 +16,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
+import com.group4.cmpe131.broadclass.app.Config;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -36,6 +32,14 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Config.appTheme == 1) {
+            setTheme(R.style.AppTheme_Light);
+        }
+
+        if (Config.appTheme == 2) {
+            setTheme(R.style.AppTheme_Dark);
+        }
 
         fbAuth = FirebaseAuth.getInstance();
 
