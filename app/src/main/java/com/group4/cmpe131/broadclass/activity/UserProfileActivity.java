@@ -62,6 +62,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private TextView userBio;
     private FloatingActionButton cameraButton;
     private Toolbar toolbar;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
     //Database ref for user bio
     private DatabaseReference fbBio;
@@ -225,6 +226,7 @@ public class UserProfileActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

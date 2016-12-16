@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -49,10 +50,16 @@ public class MainActivity extends AppCompatActivity
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private TextView mName, mEmail;
-    private CircleImageView mProfilePic;
     private FirebaseAuth fbAuth;
     private FirebaseUser user;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private CircleImageView mProfilePic;
+    private String displayName;
+    private Uri profilePic;
+    private String userEmail;
+
+    //Layout
+    private DrawerLayout mainLayout;
 
     //For debugging purposes
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -61,19 +68,36 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mainLayout = (DrawerLayout) findViewById(R.id.main_layout);
+
+        new LoadDataTask().execute();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.app_name);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                this, mainLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mainLayout.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View header = navigationView.getHeaderView(0);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mName = (TextView) header.findViewById(R.id.nameView);
+        mEmail = (TextView) header.findViewById(R.id.emailView);
+        mProfilePic = (CircleImageView) header.findViewById(R.id.profile_main_image);
+
+        //Displays email and display name
+        if (userEmail != null) mEmail.setText(user.getEmail().toString());
+        if (displayName != null) mName.setText(displayName.toString());
+        if (profilePic != null)  {
+            Glide.with(getApplicationContext())
+                    .load(profilePic.toString())
+                    .error(R.id.profile_main_image)
+                    .into(mProfilePic);
+        }
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -81,46 +105,6 @@ public class MainActivity extends AppCompatActivity
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        mName = (TextView) header.findViewById(R.id.nameView);
-        mEmail = (TextView) header.findViewById(R.id.emailView);
-        mProfilePic = (CircleImageView) header.findViewById(R.id.profile_main_image);
-
-        fbAuth = FirebaseAuth.getInstance();
-        user = fbAuth.getCurrentUser();
-
-        if (user != null) {
-            // User is signed in
-            String displayName = user.getDisplayName();
-            Uri profilePic = user.getPhotoUrl();
-
-            // If the above were null, iterate the provider data
-            // and set with the first non null data
-            for (UserInfo userInfo : user.getProviderData()) {
-                if (displayName == null && userInfo.getDisplayName() != null) {
-                    displayName = userInfo.getDisplayName();
-                }
-                if (profilePic == null && userInfo.getPhotoUrl() != null) {
-                    profilePic = userInfo.getPhotoUrl();
-                }
-            }
-
-            //Displays email and display name
-            if (user.getEmail() != null) mEmail.setText(user.getEmail().toString());
-            if (displayName != null) mName.setText(displayName.toString());
-
-            //Displays profile pic
-            //If fails attempt to obtain profile picture from firebase url else use default profile pic
-            if (profilePic != null) {
-                //If fails attempt to obtain profile picture from firebase url else use default profile pic
-                if (user.getPhotoUrl() != null) {
-                    Glide.with(this.getApplicationContext())
-                            .load(profilePic.toString())
-                            .error(R.drawable.com_facebook_profile_picture_blank_portrait)
-                            .into(mProfilePic);
-                } else {
-                    mProfilePic.setImageResource(R.drawable.com_facebook_profile_picture_blank_portrait);
-                }
-            }
 
             mRegistrationBroadcastReceiver = new BroadcastReceiver() {
                 @Override
@@ -145,7 +129,6 @@ public class MainActivity extends AppCompatActivity
 
             displayFirebaseRegId();
         }
-    }
 
     // Fetches reg id from shared preferences
     // and displays on the screen
@@ -196,9 +179,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (mainLayout.isDrawerOpen(GravityCompat.START)) {
+            mainLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -245,8 +227,7 @@ public class MainActivity extends AppCompatActivity
             finish();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        mainLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -270,11 +251,61 @@ public class MainActivity extends AppCompatActivity
 
         // clear the notification area when the app is opened
         NotificationUtils.clearNotifications(getApplicationContext());
+
     }
 
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
         super.onPause();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+    }
+
+    private class LoadDataTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+
+            fbAuth = FirebaseAuth.getInstance();
+            user = fbAuth.getCurrentUser();
+
+            if (user != null) {
+                // User is signed in
+
+                displayName = user.getDisplayName();
+                profilePic = user.getPhotoUrl();
+                userEmail = user.getEmail();
+
+                // If the above were null, iterate the provider data
+                // and set with the first non null data
+                for (UserInfo userInfo : user.getProviderData()) {
+                    if (displayName == null && userInfo.getDisplayName() != null) {
+                        displayName = userInfo.getDisplayName();
+                    }
+                    if (profilePic == null && userInfo.getPhotoUrl() != null) {
+                        profilePic = userInfo.getPhotoUrl();
+                    }
+                    if (userEmail == null && userInfo.getEmail() != null) {
+                        userEmail = userInfo.getEmail();
+                    }
+                }
+            }
+            // do the task you want to do. This will be executed in background.
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+        }
     }
 }
