@@ -1,4 +1,4 @@
-package com.group4.cmpe131.broadclass.util;
+package com.group4.cmpe131.broadclass.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

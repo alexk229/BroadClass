@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.group4.cmpe131.broadclass.R;
-import com.group4.cmpe131.broadclass.util.BCMessage;
+import com.group4.cmpe131.broadclass.model.BCMessage;
 
 import java.util.ArrayList;
 import java.util.Collections;

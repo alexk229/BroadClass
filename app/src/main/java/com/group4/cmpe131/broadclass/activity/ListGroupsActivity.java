@@ -27,8 +27,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.adapter.BCGroupAdapter;
 import com.group4.cmpe131.broadclass.fragment.ClassFragment;
-import com.group4.cmpe131.broadclass.util.BCClassInfo;
-import com.group4.cmpe131.broadclass.util.BCGroupInfo;
+import com.group4.cmpe131.broadclass.model.BCClassInfo;
+import com.group4.cmpe131.broadclass.model.BCGroupInfo;
 
 public class ListGroupsActivity extends AppCompatActivity {
     private BCClassInfo classInfo;

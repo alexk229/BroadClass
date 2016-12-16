@@ -1,6 +1,8 @@
 package com.group4.cmpe131.broadclass.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.activity.AddClassActivity;
-import com.group4.cmpe131.broadclass.util.BCClassInfo;
+import com.group4.cmpe131.broadclass.model.BCClassInfo;
 
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.List;
 public class ClassSearchResultListAdapter extends BaseAdapter {
     private Context mContext;
     private List<BCClassInfo> mSearchResults;
+    private String classDescription;
 
     private FirebaseUser user;
     private DatabaseReference fbRoot;
@@ -99,22 +102,8 @@ public class ClassSearchResultListAdapter extends BaseAdapter {
                         joinButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                DatabaseReference fbPendingStudents = fbRoot
-                                        .child("Classes")
-                                        .child(mSearchResults.get(position).getClassID())
-                                        .child("Pending_Students");
+                                showClassDescription(position);
 
-                                //Add the student to the pending students list for the class.
-                                fbPendingStudents.child(user.getUid()).setValue(true);
-
-                                //Add the class to the pending classes list for the student.
-                                fbPendingClasses.child(mSearchResults.get(position).getClassID()).setValue(true);
-
-                                //Make a toast indicating that the join request was placed.
-                                Toast.makeText(mContext, "Asked to join \"" + mSearchResults.get(position).getClassName() + ".\"", Toast.LENGTH_LONG).show();
-
-                                //Close the search panel.
-                                ((AddClassActivity) mContext).finish();
                             }
                         });
                     }
@@ -143,5 +132,72 @@ public class ClassSearchResultListAdapter extends BaseAdapter {
 
     public void clear() {
         mSearchResults.clear();
+    }
+
+    //Shows class description dialog
+    private void showClassDescription(final int position) {
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        View promptView = layoutInflater.inflate(R.layout.dialog_class_description, null);
+        final AlertDialog.Builder alertDialog= new AlertDialog.Builder(mContext);
+
+        TextView classDescriptionTextView = (TextView) promptView.findViewById(R.id.class_description_dialog);
+        TextView classProfessorTextView = (TextView) promptView.findViewById(R.id.class_professor_dialog);
+
+        //Gets class description from database
+        DatabaseReference fbClassDescriptionRef = fbRoot
+                .child("Classes")
+                .child(mSearchResults.get(position).getClassID())
+                .child("Class_Description");
+
+        fbClassDescriptionRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists())
+                    classDescription = dataSnapshot.getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        classProfessorTextView.setText(mSearchResults.get(position).getProfessorName());
+        classDescriptionTextView.setText(classDescription);
+
+        alertDialog.setView(promptView);
+
+        alertDialog.setTitle(mSearchResults.get(position).getClassName());
+        alertDialog.setPositiveButton("REQUEST", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                DatabaseReference fbPendingStudents = fbRoot
+                        .child("Classes")
+                        .child(mSearchResults.get(position).getClassID())
+                        .child("Pending_Students");
+
+                //Add the student to the pending students list for the class.
+                fbPendingStudents.child(user.getUid()).setValue(true);
+
+                //Add the class to the pending classes list for the student.
+                fbPendingClasses.child(mSearchResults.get(position).getClassID()).setValue(true);
+
+                //Make a toast indicating that the join request was placed.
+                Toast.makeText(mContext, "Asked to join \"" + mSearchResults.get(position).getClassName() + ".\"", Toast.LENGTH_LONG).show();
+
+                //Close the search panel.
+                ((AddClassActivity) mContext).finish();
+            }
+        });
+        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+
+            }
+        });
+
+        alertDialog.show();
     }
 }

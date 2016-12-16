@@ -22,7 +22,7 @@ import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.activity.AddClassActivity;
 import com.group4.cmpe131.broadclass.activity.ClassDetailActivity;
 import com.group4.cmpe131.broadclass.adapter.ClassListItemAdapter;
-import com.group4.cmpe131.broadclass.util.BCClassInfo;
+import com.group4.cmpe131.broadclass.model.BCClassInfo;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -109,6 +109,8 @@ public class ClassFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        classListView.setFastScrollEnabled(true);
 
         addClassButton = (FloatingActionButton) classView.findViewById(R.id.add_class_fab);
 

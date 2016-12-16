@@ -1,25 +1,26 @@
-package com.group4.cmpe131.broadclass.util;
-
-import java.util.List;
+package com.group4.cmpe131.broadclass.model;
 
 public class BCClassInfo {
     private String ClassID;
     private String ClassName;
     private String ProfessorID;
     private String ProfessorName;
+    private String ClassDescription;
 
     public BCClassInfo() {
         setClassID("");
         setClassName("");
         setProfessorID("");
         setProfessorName("");
+        setClassDescription("");
     }
 
-    public BCClassInfo(String classID, String className, String professorID, String professorName) {
+    public BCClassInfo(String classID, String className, String professorID, String professorName, String classDescription) {
         setClassID(classID);
         setClassName(className);
         setProfessorID(professorID);
         setProfessorName(professorName);
+        setClassDescription(classDescription);
     }
 
     public String getClassID() {
@@ -53,4 +54,8 @@ public class BCClassInfo {
     public void setProfessorName(String professorName) {
         ProfessorName = professorName;
     }
+
+    public String getClassDescription() { return ClassDescription; }
+
+    public void setClassDescription(String classDescription) { ClassDescription = classDescription; }
 }

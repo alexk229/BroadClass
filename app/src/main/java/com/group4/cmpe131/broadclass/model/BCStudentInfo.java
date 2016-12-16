@@ -1,4 +1,4 @@
-package com.group4.cmpe131.broadclass.util;
+package com.group4.cmpe131.broadclass.model;
 
 public class BCStudentInfo implements Comparable {
     private long    mID;

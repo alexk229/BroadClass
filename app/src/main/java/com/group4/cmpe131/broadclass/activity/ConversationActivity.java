@@ -24,9 +24,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.adapter.BCMessageAdapter;
 import com.group4.cmpe131.broadclass.fragment.ClassFragment;
-import com.group4.cmpe131.broadclass.util.BCClassInfo;
-import com.group4.cmpe131.broadclass.util.BCContact;
-import com.group4.cmpe131.broadclass.util.BCMessage;
+import com.group4.cmpe131.broadclass.model.BCClassInfo;
+import com.group4.cmpe131.broadclass.model.BCContact;
+import com.group4.cmpe131.broadclass.model.BCMessage;
 
 import java.text.ParseException;
 import java.util.ArrayList;

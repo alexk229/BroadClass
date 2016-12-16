@@ -2,7 +2,6 @@ package com.group4.cmpe131.broadclass.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +20,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.activity.ConversationActivity;
-import com.group4.cmpe131.broadclass.util.BCContact;
+import com.group4.cmpe131.broadclass.model.BCContact;
 
 import java.util.ArrayList;
 import java.util.List;

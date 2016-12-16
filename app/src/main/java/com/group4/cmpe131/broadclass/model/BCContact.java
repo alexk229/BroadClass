@@ -1,4 +1,4 @@
-package com.group4.cmpe131.broadclass.util;
+package com.group4.cmpe131.broadclass.model;
 
 /* A simple class for holding contact information for use with lists and Firebase queries. */
 public class BCContact {

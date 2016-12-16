@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -67,10 +66,34 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        fbAuth = FirebaseAuth.getInstance();
+        user = fbAuth.getCurrentUser();
+
+        if (user != null) {
+            // User is signed in
+
+            displayName = user.getDisplayName();
+            profilePic = user.getPhotoUrl();
+            userEmail = user.getEmail();
+
+            // If the above were null, iterate the provider data
+            // and set with the first non null data
+            for (UserInfo userInfo : user.getProviderData()) {
+                if (displayName == null && userInfo.getDisplayName() != null) {
+                    displayName = userInfo.getDisplayName();
+                }
+                if (profilePic == null && userInfo.getPhotoUrl() != null) {
+                    profilePic = userInfo.getPhotoUrl();
+                }
+                if (userEmail == null && userInfo.getEmail() != null) {
+                    userEmail = userInfo.getEmail();
+                }
+            }
+        }
+
         setContentView(R.layout.activity_main);
         mainLayout = (DrawerLayout) findViewById(R.id.main_layout);
-
-        new LoadDataTask().execute();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -92,7 +115,7 @@ public class MainActivity extends AppCompatActivity
         //Displays email and display name
         if (userEmail != null) mEmail.setText(user.getEmail().toString());
         if (displayName != null) mName.setText(displayName.toString());
-        if (profilePic != null)  {
+        if (profilePic != null) {
             Glide.with(getApplicationContext())
                     .load(profilePic.toString())
                     .error(R.id.profile_main_image)
@@ -105,30 +128,29 @@ public class MainActivity extends AppCompatActivity
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
 
-            mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
+                // checking for type intent filter
+                if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
+                    // gcm successfully registered
+                    // now subscribe to `global` topic to receive app wide notifications
+                    FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
 
-                    // checking for type intent filter
-                    if (intent.getAction().equals(Config.REGISTRATION_COMPLETE)) {
-                        // gcm successfully registered
-                        // now subscribe to `global` topic to receive app wide notifications
-                        FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
+                    displayFirebaseRegId();
 
-                        displayFirebaseRegId();
+                } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
+                    // new push notification is received
 
-                    } else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
-                        // new push notification is received
-
-                        String message = intent.getStringExtra("message");
-                        Toast.makeText(getApplicationContext(), "Push notification: " + message, Toast.LENGTH_LONG).show();
-                    }
+                    String message = intent.getStringExtra("message");
+                    Toast.makeText(getApplicationContext(), "Push notification: " + message, Toast.LENGTH_LONG).show();
                 }
-            };
+            }
+        };
 
-            displayFirebaseRegId();
-        }
+        displayFirebaseRegId();
+    }
 
     // Fetches reg id from shared preferences
     // and displays on the screen
@@ -236,11 +258,10 @@ public class MainActivity extends AppCompatActivity
         fbAuth.signOut();
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
-
-        new LoadDataTask().execute();
 
         // register GCM registration complete receiver
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
@@ -263,51 +284,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onStop(){
+    public void onStop() {
         super.onStop();
     }
 
-    private class LoadDataTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-
-            fbAuth = FirebaseAuth.getInstance();
-            user = fbAuth.getCurrentUser();
-
-            if (user != null) {
-                // User is signed in
-
-                displayName = user.getDisplayName();
-                profilePic = user.getPhotoUrl();
-                userEmail = user.getEmail();
-
-                // If the above were null, iterate the provider data
-                // and set with the first non null data
-                for (UserInfo userInfo : user.getProviderData()) {
-                    if (displayName == null && userInfo.getDisplayName() != null) {
-                        displayName = userInfo.getDisplayName();
-                    }
-                    if (profilePic == null && userInfo.getPhotoUrl() != null) {
-                        profilePic = userInfo.getPhotoUrl();
-                    }
-                    if (userEmail == null && userInfo.getEmail() != null) {
-                        userEmail = userInfo.getEmail();
-                    }
-                }
-            }
-            // do the task you want to do. This will be executed in background.
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-        }
-    }
 }
+

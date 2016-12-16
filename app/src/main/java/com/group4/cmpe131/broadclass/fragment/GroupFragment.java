@@ -2,7 +2,6 @@ package com.group4.cmpe131.broadclass.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +21,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.activity.ConversationActivity;
 
-import java.lang.reflect.GenericArrayType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -145,4 +143,6 @@ public class GroupFragment extends Fragment {
 
         return groupView;
     }
+
+
 }

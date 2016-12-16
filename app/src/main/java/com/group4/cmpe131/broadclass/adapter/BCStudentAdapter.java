@@ -14,9 +14,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.group4.cmpe131.broadclass.R;
-import com.group4.cmpe131.broadclass.util.BCClassInfo;
-import com.group4.cmpe131.broadclass.util.BCGroupInfo;
-import com.group4.cmpe131.broadclass.util.BCStudentInfo;
+import com.group4.cmpe131.broadclass.model.BCClassInfo;
+import com.group4.cmpe131.broadclass.model.BCGroupInfo;
+import com.group4.cmpe131.broadclass.model.BCStudentInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;

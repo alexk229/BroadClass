@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -31,7 +30,7 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.fragment.ClassFragment;
-import com.group4.cmpe131.broadclass.util.BCClassInfo;
+import com.group4.cmpe131.broadclass.model.BCClassInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.group4.cmpe131.broadclass.R;
-import com.group4.cmpe131.broadclass.util.BCClassInfo;
+import com.group4.cmpe131.broadclass.model.BCClassInfo;
 
 import java.util.List;
 

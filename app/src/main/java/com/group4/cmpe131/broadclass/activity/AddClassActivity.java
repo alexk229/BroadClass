@@ -1,6 +1,7 @@
 package com.group4.cmpe131.broadclass.activity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -23,7 +24,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.adapter.ClassSearchResultListAdapter;
-import com.group4.cmpe131.broadclass.util.BCClassInfo;
+import com.group4.cmpe131.broadclass.model.BCClassInfo;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
@@ -72,7 +73,6 @@ public class AddClassActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(final String query) {
                 searchResults.clear();
-
                 fbClasses.addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String previousChild) {
@@ -167,9 +167,10 @@ public class AddClassActivity extends AppCompatActivity {
 
             @Override
             public void onSearchViewClosed() {
-
+                searchResults.clear();
             }
         });
+
     }
 
     @Override
@@ -184,7 +185,7 @@ public class AddClassActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem i) {
         switch(i.getItemId()) {
             case R.id.new_class_button:
-                requestClassDescription();
+                createClassDialog();
                 return true;
 
             default:
@@ -193,12 +194,12 @@ public class AddClassActivity extends AppCompatActivity {
     }
 
     //Dialog to create classroom
-    private void requestClassDescription() {
+    private void createClassDialog() {
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View promptView = layoutInflater.inflate(R.layout.dialog_register_classroom, null);
 
         final EditText classTitle = (EditText) promptView.findViewById(R.id.class_title);
-        EditText classDescription = (EditText) promptView.findViewById(R.id.class_description);
+        final EditText classDescription = (EditText) promptView.findViewById(R.id.class_description);
 
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle("Class Information");
@@ -242,8 +243,16 @@ public class AddClassActivity extends AppCompatActivity {
                     DatabaseReference userClassListRef = firebaseRoot.child("Profiles").child(fbUser.getUid()).child("Classes");
                     userClassListRef.child(classRef.getKey()).setValue(true);
 
-                    //else dialog stays open.
+                    DatabaseReference classDescriptionRef = firebaseRoot
+                            .child("Classes")
+                            .child(classRef.getKey())
+                            .child("Class_Description");
+                    classDescriptionRef.setValue(classDescription.getText().toString());
+
                     alert.dismiss();
+
+                    startActivity(new Intent(AddClassActivity.this, MainActivity.class));
+                    finish();
                 }
             }
         });
@@ -271,4 +280,5 @@ public class AddClassActivity extends AppCompatActivity {
 
         return !cancel;
     }
+
 }
