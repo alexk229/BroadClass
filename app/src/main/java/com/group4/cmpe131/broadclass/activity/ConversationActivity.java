@@ -125,17 +125,21 @@ public class ConversationActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         //Check if the conversation is associated with a group. Inflate the menu if it is.
-        fbRoot.child("Chats").child(chatId).child("Group").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
-                    groupId = (String) dataSnapshot.getValue();
-                    getMenuInflater().inflate(R.menu.menu_conversation, menu);
+        if(chatId != null) {
+            fbRoot.child("Chats").child(chatId).child("Group").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        groupId = (String) dataSnapshot.getValue();
+                        getMenuInflater().inflate(R.menu.menu_conversation, menu);
+                    }
                 }
-            }
 
-            @Override public void onCancelled(DatabaseError databaseError) {}
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
 
         return true;
     }
