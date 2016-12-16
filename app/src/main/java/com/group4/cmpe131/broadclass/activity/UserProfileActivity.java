@@ -454,6 +454,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
         final AlertDialog alert = alertDialogBuilder.create();
         alert.show();
-
     }
+
 }

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class ClassDetailActivity extends AppCompatActivity {
     private BCClassInfo classInfo;
@@ -81,6 +82,7 @@ public class ClassDetailActivity extends AppCompatActivity {
                 announcementChatKeyList.add((String) dataSnapshot.child("Chat_Key").getValue());
 
                 announcementSubjectList.notifyDataSetChanged();
+
             }
 
             @Override public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
@@ -244,5 +246,16 @@ public class ClassDetailActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void sendNotificationToUsers(String user, final String message) {
+        DatabaseReference ref = fbRoot
+                .child("Notification_Requests");
+
+        Map notification = new HashMap<>();
+        notification.put("username", user);
+        notification.put("message", message);
+
+        ref.push().setValue(notification);
     }
 }

@@ -9,8 +9,4 @@
         android:title="Groups"
         android:orderInCategory="102"
         android:id="@+id/action_class_groups" />
-    <item android:title="@string/action_settings"
-        android:id="@+id/action_settings"
-        android:orderInCategory="103"
-        app:showAsAction="never" />
 </menu>

@@ -34,7 +34,7 @@
         <EditText
             android:id="@+id/class_description"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="wrap_content"
             android:hint="@string/hint_class_description"
             android:gravity="start"
             android:inputType="textMultiLine"

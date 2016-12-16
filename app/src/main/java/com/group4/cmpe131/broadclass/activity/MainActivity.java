@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -26,10 +25,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.group4.cmpe131.broadclass.R;
 import com.group4.cmpe131.broadclass.app.Config;
@@ -38,10 +41,13 @@ import com.group4.cmpe131.broadclass.fragment.ContactFragment;
 import com.group4.cmpe131.broadclass.fragment.GroupFragment;
 import com.group4.cmpe131.broadclass.util.NotificationUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.group4.cmpe131.broadclass.activity.UserProfileActivity.decodeFromFirebaseBase64;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,8 +60,8 @@ public class MainActivity extends AppCompatActivity
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private CircleImageView mProfilePic;
     private String displayName;
-    private Uri profilePic;
     private String userEmail;
+    private DatabaseReference fbRoot;
 
     //Layout
     private DrawerLayout mainLayout;
@@ -70,11 +76,31 @@ public class MainActivity extends AppCompatActivity
         fbAuth = FirebaseAuth.getInstance();
         user = fbAuth.getCurrentUser();
 
+        fbRoot = FirebaseDatabase.getInstance().getReference().getRoot()
+                .child("Profiles")
+                .child(user.getUid())
+                .child("Profile picture");
+
+        fbRoot.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    mProfilePic.setImageBitmap(decodeFromFirebaseBase64(dataSnapshot.getValue().toString()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         if (user != null) {
             // User is signed in
 
             displayName = user.getDisplayName();
-            profilePic = user.getPhotoUrl();
             userEmail = user.getEmail();
 
             // If the above were null, iterate the provider data
@@ -82,9 +108,6 @@ public class MainActivity extends AppCompatActivity
             for (UserInfo userInfo : user.getProviderData()) {
                 if (displayName == null && userInfo.getDisplayName() != null) {
                     displayName = userInfo.getDisplayName();
-                }
-                if (profilePic == null && userInfo.getPhotoUrl() != null) {
-                    profilePic = userInfo.getPhotoUrl();
                 }
                 if (userEmail == null && userInfo.getEmail() != null) {
                     userEmail = userInfo.getEmail();
@@ -115,12 +138,6 @@ public class MainActivity extends AppCompatActivity
         //Displays email and display name
         if (userEmail != null) mEmail.setText(user.getEmail().toString());
         if (displayName != null) mName.setText(displayName.toString());
-        if (profilePic != null) {
-            Glide.with(getApplicationContext())
-                    .load(profilePic.toString())
-                    .error(R.id.profile_main_image)
-                    .into(mProfilePic);
-        }
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -286,6 +303,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    @Override
+    public void onRestart()
+    {
+        super.onRestart();
+        finish();
+        startActivity(getIntent());
     }
 
 }
