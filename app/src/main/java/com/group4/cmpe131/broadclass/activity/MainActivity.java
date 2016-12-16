@@ -85,7 +85,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try {
-                    mProfilePic.setImageBitmap(decodeFromFirebaseBase64(dataSnapshot.getValue().toString()));
+                    if(dataSnapshot.exists()) {
+                        mProfilePic.setImageBitmap(decodeFromFirebaseBase64(((String) dataSnapshot.getValue())));
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
