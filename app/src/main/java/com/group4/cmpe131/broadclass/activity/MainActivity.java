@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private TextView mName, mEmail;
+    private ProgressBar progressBar;
     private FirebaseAuth fbAuth;
     private FirebaseUser user;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
@@ -111,25 +113,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        if (user != null) {
-            // User is signed in
-
-            displayName = user.getDisplayName();
-            userEmail = user.getEmail();
-
-            // If the above were null, iterate the provider data
-            // and set with the first non null data
-            for (UserInfo userInfo : user.getProviderData()) {
-                if (displayName == null && userInfo.getDisplayName() != null) {
-                    displayName = userInfo.getDisplayName();
-                }
-                if (userEmail == null && userInfo.getEmail() != null) {
-                    userEmail = userInfo.getEmail();
-                }
-            }
-        }
-
         setContentView(R.layout.activity_main);
+
         mainLayout = (DrawerLayout) findViewById(R.id.main_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -149,13 +134,30 @@ public class MainActivity extends AppCompatActivity
         mEmail = (TextView) header.findViewById(R.id.emailView);
         mProfilePic = (CircleImageView) header.findViewById(R.id.profile_main_image);
 
+        if (user != null) {
+            // User is signed in
+
+            displayName = user.getDisplayName();
+            userEmail = user.getEmail();
+
+            // If the above were null, iterate the provider data
+            // and set with the first non null data
+            for (UserInfo userInfo : user.getProviderData()) {
+                if (displayName == null && userInfo.getDisplayName() != null) {
+                    displayName = userInfo.getDisplayName();
+                }
+                if (userEmail == null && userInfo.getEmail() != null) {
+                    userEmail = userInfo.getEmail();
+                }
+            }
+        }
+
         //Displays email and display name
         if (userEmail != null) mEmail.setText(user.getEmail().toString());
         if (displayName != null) mName.setText(displayName.toString());
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
-
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 

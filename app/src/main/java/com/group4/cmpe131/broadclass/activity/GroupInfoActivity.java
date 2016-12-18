@@ -258,7 +258,9 @@ public class GroupInfoActivity extends AppCompatActivity {
     //Shows a options dialog when selecting a user
     private void showDialogOptions(final String studentUID, final int position) {
         List<String> mOptionsList = new ArrayList<String>();
-        mOptionsList.add("Message");
+        if(!fbUser.getUid().equals(studentUID)) {
+            mOptionsList.add("Message");
+        }
         mOptionsList.add("View Profile");
         final CharSequence[] mOptions = mOptionsList.toArray(new String[mOptionsList.size()]);
 

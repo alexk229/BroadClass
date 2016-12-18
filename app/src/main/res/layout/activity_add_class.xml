@@ -20,7 +20,16 @@
         android:id="@+id/class_search_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:imeOptions="actionSearch" />
+        android:imeOptions="actionSearch" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/empty_search_text"
+            android:text="Tap search button to search for classes"
+            android:textAlignment="center"
+            android:layout_gravity="center_vertical"/>
+    </com.miguelcatalan.materialsearchview.MaterialSearchView>
     <ListView
         android:id="@+id/class_search_results"
         android:layout_width="match_parent"

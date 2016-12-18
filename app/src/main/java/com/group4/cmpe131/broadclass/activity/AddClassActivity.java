@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +43,7 @@ public class AddClassActivity extends AppCompatActivity {
     private ClassSearchResultListAdapter listAdapter;
     private ListView resultsView;
     private MaterialSearchView searchView;
+    private TextView emptyListTextView;
 
     public AddClassActivity() {
         fbUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -80,6 +82,9 @@ public class AddClassActivity extends AppCompatActivity {
         listAdapter = new ClassSearchResultListAdapter(this, searchResults);
         resultsView = (ListView) findViewById(R.id.class_search_results);
         resultsView.setAdapter(listAdapter);
+
+        emptyListTextView = (TextView) findViewById(R.id.empty_search_text);
+        emptyListTextView.setVisibility(View.VISIBLE);
 
         //Install listener for search button.
         searchView = (MaterialSearchView) findViewById(R.id.class_search_text);
@@ -176,12 +181,11 @@ public class AddClassActivity extends AppCompatActivity {
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
-
+                emptyListTextView.setVisibility(View.INVISIBLE);
             }
 
             @Override
             public void onSearchViewClosed() {
-                searchResults.clear();
             }
         });
 
