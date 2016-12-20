@@ -257,7 +257,7 @@ public class GroupInfoActivity extends AppCompatActivity {
 
     //Shows a options dialog when selecting a user
     private void showDialogOptions(final String studentUID, final int position) {
-        List<String> mOptionsList = new ArrayList<String>();
+        final List<String> mOptionsList = new ArrayList<String>();
         if(!fbUser.getUid().equals(studentUID)) {
             mOptionsList.add("Message");
         }
@@ -268,36 +268,14 @@ public class GroupInfoActivity extends AppCompatActivity {
         alertDialog.setItems(mOptions, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                switch (i) {
-                    case 0:
-                        fbRoot.child("Profiles").child(fbUser.getUid()).child("Contacts")
-                                .child(memberList.getItem(position).getUID())
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        Intent i = new Intent(activityContext, ConversationActivity.class);
+                String option = mOptionsList.get(i);
 
-                                        i.putExtra(Intent.EXTRA_TITLE, memberList.getItem(position).getName());
-
-                                        if(dataSnapshot.exists()) {
-                                            String chatId = (String) dataSnapshot.getValue();
-                                            i.putExtra(ConversationActivity.CHAT_ID, chatId);
-                                        }
-
-                                        else {
-                                            i.putExtra(ConversationActivity.RECIPIENT_USER_ID, studentUID);
-                                        }
-
-                                        startActivity(i);
-                                    }
-
-                                    @Override public void onCancelled(DatabaseError databaseError) {}
-                                });
+                switch (option) {
+                    case "Message":
+                        startConversation(studentUID, position);
                         break;
-                    case 1:
-                        Intent intent = new Intent(activityContext, UserProfileActivity.class);
-                        intent.putExtra("UserID", studentUID);
-                        startActivity(intent);
+                    case "View Profile":
+                        viewProfile(studentUID);
                         break;
                     default:
                         break;
@@ -306,6 +284,42 @@ public class GroupInfoActivity extends AppCompatActivity {
         });
         AlertDialog alertDialogObject = alertDialog.create();
         alertDialogObject.show();
+    }
+
+    private void startConversation(final String studentUID, final int position) {
+        fbRoot.child("Profiles").child(fbUser.getUid()).child("Contacts").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Intent intent = new Intent(activityContext, ConversationActivity.class);
+                intent.putExtra(Intent.EXTRA_TITLE, memberList.getItem(position).getName());
+                intent.putExtra(ConversationActivity.RECIPIENT_USER_ID, memberList.getItem(position).getUID());
+
+                if (dataSnapshot.exists()) {
+                    Iterator i = dataSnapshot.getChildren().iterator();
+
+                    while (i.hasNext()) {
+                        DataSnapshot s = (DataSnapshot) i.next();
+
+                        if (s.getKey().equals(studentUID)) {
+                            intent.putExtra(ConversationActivity.CHAT_ID, (String) s.getValue());
+                            break;
+                        }
+                    }
+                }
+
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void viewProfile(final String studentUID) {
+        Intent intent = new Intent(activityContext, UserProfileActivity.class);
+        intent.putExtra("UserID", studentUID);
+        startActivity(intent);
     }
 
     @Override
