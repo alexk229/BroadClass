@@ -5,6 +5,11 @@ Currently there are few option for a group messaging service for a classroom siz
 The solution we are seeking to implement is an instant messenger designed around the concept of, and for use in, a classroom environment. A text message style group messaging system has not seen wide use for a classroom environment, and this type of service offers large benefits to an environment already full of savvy mobile device users by capitalizing on the familiarity and convenience of text messaging. This would allow for easier access to a more fluid conversation system, and overall would be desired for strengthening a classroom environment. Using Android devices and Web servers, a professor-organized group messaging service can be created to allow for a simple but flexible messaging environment that is easily managed and accessible. 
 
 ![Image of Login](https://lh4.googleusercontent.com/MW89-H4pG8LMqMGHQmTyhRxa6Mo88_haS3vAq0s7w64_aAmJJGj3eztb1DJWZO540UALYxF0MUOCjbW040FYB7440PwoMmYxhq3W192-)
+![Image of Register](https://lh4.googleusercontent.com/11yYB8dQKPqjf7n4mK3O5lVyuH5FtDsskLO6fC4-blLAlTY_KxHHcbIVOaz_iLh4O6C8cYrlIk5ALetxwGlEOVc4Dlzno5mTiMHiRq6v)
+![Image of ClassView](https://lh5.googleusercontent.com/-isxhIn-xsx7Xu6Dshju4aM25vBpyW2gAGK5590uQfYeYB5Ai2PNjya2lKzrxiN3Y4iisyz21sK0hVS8eSexurXIxmS1u-tTjfhGCfdN)
+![Image of DiscussionView](https://lh4.googleusercontent.com/b0PhkPTkVbCTDoyw392aGj0hcMPY2gR0FL0JFRPyKaFO80YLq26pTm2MIAfp4KkR8q5qUXNELIMGG6-4ZiU7B6ueYV8_Y0UyLc-gX7ec)
+![Image of Messaging](https://lh3.googleusercontent.com/I6Rp8sBCeos12TTteNYoQdsAe4neoKC1HVRH9S9gCgvgvYE0K1ut4s6UswUUeF2EX3LlEDPkswUdTjQ4Rn8po0xkVW2qZfNiUueHAV8h4OJdGz89FJ_1s68Xi3Q3bChawIq6zZNE)
+
 
 ## Built With
 
