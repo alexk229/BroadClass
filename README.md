@@ -27,7 +27,6 @@ The solution we are seeking to implement is an instant messenger designed around
 ```
 Copyright 2018 Alex Kong, Justin Benassi, Yara Dwidar, Conner Short
 
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
