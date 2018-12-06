@@ -14,7 +14,8 @@ The solution we are seeking to implement is an instant messenger designed around
 ![Image of Messaging](https://lh6.googleusercontent.com/VZDm5m2bP07KR3Trfr0HikD6NZjmPMR7-jNHFLoXF6F-k8BMtdqxhWrI-BOC1387cK2RyNXYUDZ1nBf_proClTNrNs_PrDuFt6DA7ChfTRnvAZhh7juf5FKuMePPng2dddZLguJh)
 ![Image of GroupView](https://lh5.googleusercontent.com/Ch_AIPdqD1JfvD7qBqrK7c3zE2MM7iHs14MIi6SHRufRKG6kIiMj6Ppe88eJvV4Z42gm4Yfj0N_vmZsmUFHPKubI8ycgViuTw_OhBbsb)
 ![Image of ContactsView](https://lh4.googleusercontent.com/Y4VkfdUVsoDRGK1i1pdGlamrqCwdOoJGPjKRC7jpHUt0OcSGRk5E-k-OFI0EEroWHRKAJChe9xo9hcJ5HeC1smThvk_2Ywt6in8bFvLh)
-!
+![Image of NavDrawer](https://lh3.googleusercontent.com/pGy9Y-6-SYEqRD6HbekmS30ZNARFsStAZmnKBhYFQaV9R22vRLpPUPdh973BKmXD1g_CdFrSyMHmZFWTyc_qb2O8Y1TQ5eX7g4tzbSAY)
+![Image of Bio](https://lh4.googleusercontent.com/cdEY248Emn_H0JZdieUQ6-7T-zxsORttsFGVMdxKJMaT032QHwsqB_ZLFcjZHQBIXQMiGD_Eq6VAjrN3hhyODGaFQtXSHwogvnIIGFIb)
 
 
 ## Built With
